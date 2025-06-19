@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🐔 Pollos COB500</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #4361ee;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .metricas {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .metrica {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        .vivos { background: linear-gradient(45deg, #4cc9f0, #4361ee); }
+        .muertos { background: linear-gradient(45deg, #f72585, #f8961e); }
+        .consumo { background: linear-gradient(45deg, #4CAF50, #8BC34A); }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #4361ee;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f0f7ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐔 MANEJO DE POLLOS COB500</h1>
+        
+        <div class="metricas">
+            <div class="metrica vivos">
+                <h3>Pollos vivos</h3>
+                <p id="vivos">0</p>
+            </div>
+            <div class="metrica muertos">
+                <h3>Pollos muertos</h3>
+                <p id="muertos">0</p>
+            </div>
+            <div class="metrica consumo">
+                <h3>Consumo hoy</h3>
+                <p id="consumo">0 kg</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Iniciar nueva crianza</h3>
+            <input type="number" id="pollos-iniciales" placeholder="Cantidad de pollos">
+            <button onclick="iniciarCrianza()">🟢 Iniciar</button>
+        </div>
+
+        <div class="card">
+            <h3>Registrar mortalidad</h3>
+            <input type="number" id="muertos-hoy" placeholder="Pollos muertos hoy">
+            <button onclick="registrarMuertos()">✍️ Registrar</button>
+        </div>
+
+        <div class="card">
+            <h3>Proyección de consumo</h3>
+            <table>
+                <tr>
+                    <th>Fase</th>
+                    <th>Consumo total</th>
+                </tr>
+                <tr>
+                    <td>Inicio (0-21 días)</td>
+                    <td id="consumo-inicio">0 kg</td>
+                </tr>
+                <tr>
+                    <td>Crecimiento (22-35 días)</td>
+                    <td id="consumo-crecimiento">0 kg</td>
+                </tr>
+                <tr>
+                    <td>Engorde (36-42 días)</td>
+                    <td id="consumo-engorde">0 kg</td>
+                </tr>
+                <tr style="font-weight: bold;">
+                    <td>Total 42 días</td>
+                    <td id="consumo-total">0 kg</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Datos que persisten al refrescar
+        let datos = JSON.parse(localStorage.getItem('pollos')) || {
+            pollosIniciales: 0,
+            pollosMuertos: 0,
+            fechaInicio: null
+        };
+
+        // Actualiza toda la pantalla
+        function actualizar() {
+            // Pollos vivos y muertos
+            document.getElementById('vivos').textContent = datos.pollosIniciales - datos.pollosMuertos;
+            document.getElementById('muertos').textContent = datos.pollosMuertos;
+            
+            // Consumo diario (ejemplo: 20g por pollo)
+            const consumoHoy = (datos.pollosIniciales - datos.pollosMuertos) * 0.02;
+            document.getElementById('consumo').textContent = consumoHoy.toFixed(2) + ' kg';
+            
+            // Proyección de consumo (valores de ejemplo)
+            document.getElementById('consumo-inicio').textContent = (datos.pollosIniciales * 0.6) + ' kg';
+            document.getElementById('consumo-crecimiento').textContent = (datos.pollosIniciales * 0.9) + ' kg';
+            document.getElementById('consumo-engorde').textContent = (datos.pollosIniciales * 0.6) + ' kg';
+            document.getElementById('consumo-total').textContent = (datos.pollosIniciales * 2.1) + ' kg';
+        }
+
+        // Inicia nueva crianza
+        function iniciarCrianza() {
+            const cantidad = parseInt(document.getElementById('pollos-iniciales').value);
+            if (cantidad > 0) {
+                datos.pollosIniciales = cantidad;
+                datos.pollosMuertos = 0;
+                datos.fechaInicio = new Date().toISOString();
+                localStorage.setItem('pollos', JSON.stringify(datos));
+                actualizar();
+                alert('¡Crianza iniciada!');
+            }
+        }
+
+        // Registra pollos muertos
+        function registrarMuertos() {
+            const muertos = parseInt(document.getElementById('muertos-hoy').value) || 0;
+            datos.pollosMuertos += muertos;
+            localStorage.setItem('pollos', JSON.stringify(datos));
+            actualizar();
+        }
+
+        // Carga los datos al iniciar
+        actualizar();
+    </script>
+</body>
+</html>

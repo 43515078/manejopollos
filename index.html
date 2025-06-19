@@ -83,12 +83,20 @@
             padding: 12px;
             border-radius: 8px;
             border: none;
-            background: #4361ee;
             color: white;
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
             font-size: 16px;
+        }
+        .btn-iniciar {
+            background: #4361ee;
+        }
+        .btn-eliminar {
+            background: #f72585;
+        }
+        .btn-registrar {
+            background: #4361ee;
         }
         button:hover {
             opacity: 0.9;
@@ -146,11 +154,11 @@
 
         <!-- Pestaña de Resumen -->
         <div id="resumen" class="tab-content active">
-            <div id="formulario-inicio" class="card">
+            <div id="formulario-inicio" class="card" style="display: none;">
                 <h3>Iniciar nueva crianza</h3>
                 <input type="number" id="pollos-iniciales" placeholder="Cantidad de pollos">
                 <input type="date" id="fecha-inicio" placeholder="Fecha de nacimiento">
-                <button onclick="iniciarCrianza()">🟢 Iniciar Crianza</button>
+                <button class="btn-iniciar" onclick="iniciarCrianza()">🟢 Iniciar Crianza</button>
             </div>
 
             <div id="resumen-crianza" class="card" style="display: none;">
@@ -189,6 +197,8 @@
                         <p id="humedad">0%</p>
                     </div>
                 </div>
+                
+                <button class="btn-eliminar" onclick="eliminarCrianza()">❌ Eliminar crianza actual</button>
             </div>
         </div>
 
@@ -197,7 +207,7 @@
             <div class="card">
                 <h3>Registrar mortalidad</h3>
                 <input type="number" id="muertos-hoy" placeholder="Pollos muertos hoy">
-                <button onclick="registrarMuertos()">✍️ Registrar</button>
+                <button class="btn-registrar" onclick="registrarMuertos()">✍️ Registrar</button>
             </div>
 
             <div class="card">
@@ -368,28 +378,42 @@
             document.querySelector(`.tab[onclick="mostrarTab('${tabId}')"]`).classList.add('active');
         }
 
+        // Eliminar la crianza actual
+        function eliminarCrianza() {
+            if (confirm('¿Estás seguro de eliminar la crianza actual? Todos los datos se perderán.')) {
+                datos = {
+                    pollosIniciales: 0,
+                    pollosMuertos: 0,
+                    fechaInicio: null,
+                    historialMortalidad: []
+                };
+                localStorage.setItem('pollos', JSON.stringify(datos));
+                actualizar();
+            }
+        }
+
         // Actualiza toda la pantalla
         function actualizar() {
-            const pollosVivos = datos.pollosIniciales - datos.pollosMuertos;
-            let diasTranscurridos = 0;
-            let semanaActual = 0;
+            const tieneCrianza = datos.fechaInicio !== null;
             
-            if (datos.fechaInicio) {
-                diasTranscurridos = Math.floor((new Date() - new Date(datos.fechaInicio)) / (1000 * 60 * 60 * 24));
-                semanaActual = Math.min(Math.floor(diasTranscurridos / 7), 5);
-                
-                // Mostrar resumen y ocultar formulario de inicio
-                document.getElementById('formulario-inicio').style.display = 'none';
-                document.getElementById('resumen-crianza').style.display = 'block';
-                
-                // Actualizar barra de progreso
-                const porcentajeProgreso = Math.min((diasTranscurridos / 42) * 100, 100);
-                document.getElementById('progreso-crianza').style.width = `${porcentajeProgreso}%`;
-            } else {
-                // Mostrar formulario de inicio y ocultar resumen
-                document.getElementById('formulario-inicio').style.display = 'block';
-                document.getElementById('resumen-crianza').style.display = 'none';
+            // Mostrar/ocultar elementos según si hay crianza
+            document.getElementById('formulario-inicio').style.display = tieneCrianza ? 'none' : 'block';
+            document.getElementById('resumen-crianza').style.display = tieneCrianza ? 'block' : 'none';
+            
+            // Si no hay crianza, mostrar solo el formulario y salir
+            if (!tieneCrianza) {
+                // Establecer fecha actual como valor por defecto
+                document.getElementById('fecha-inicio').valueAsDate = new Date();
+                return;
             }
+            
+            const pollosVivos = datos.pollosIniciales - datos.pollosMuertos;
+            const diasTranscurridos = Math.floor((new Date() - new Date(datos.fechaInicio)) / (1000 * 60 * 60 * 24));
+            const semanaActual = Math.min(Math.floor(diasTranscurridos / 7), 5);
+            
+            // Actualizar barra de progreso
+            const porcentajeProgreso = Math.min((diasTranscurridos / 42) * 100, 100);
+            document.getElementById('progreso-crianza').style.width = `${porcentajeProgreso}%`;
             
             // Pollos vivos y muertos
             document.getElementById('vivos').textContent = pollosVivos;
@@ -449,7 +473,10 @@
             if (datos.historialMortalidad.length === 0) {
                 historialContainer.innerHTML = '<p style="text-align: center; color: #666;">No hay registros de mortalidad</p>';
             } else {
-                datos.historialMortalidad.forEach(registro => {
+                // Ordenar historial por fecha (más reciente primero)
+                const historialOrdenado = [...datos.historialMortalidad].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                
+                historialOrdenado.forEach(registro => {
                     const fecha = new Date(registro.fecha).toLocaleDateString();
                     const item = document.createElement('div');
                     item.className = 'historial-item';
@@ -493,7 +520,11 @@
         }
 
         // Carga los datos al iniciar
-        actualizar();
+        window.onload = function() {
+            actualizar();
+            // Mostrar pestaña de resumen por defecto
+            mostrarTab('resumen');
+        };
     </script>
 </body>
 </html>

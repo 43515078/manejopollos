@@ -79,6 +79,9 @@
         th {
             background: #f0f7ff;
         }
+        .fila-semana {
+            background: #f9f9f9;
+        }
     </style>
 </head>
 <body>
@@ -115,26 +118,43 @@
         <div class="card">
             <h3>Proyección de consumo</h3>
             <table>
-                <tr>
-                    <th>Fase</th>
-                    <th>Consumo total</th>
-                </tr>
-                <tr>
-                    <td>Inicio (0-21 días)</td>
-                    <td id="consumo-inicio">0 kg</td>
-                </tr>
-                <tr>
-                    <td>Crecimiento (22-35 días)</td>
-                    <td id="consumo-crecimiento">0 kg</td>
-                </tr>
-                <tr>
-                    <td>Engorde (36-42 días)</td>
-                    <td id="consumo-engorde">0 kg</td>
-                </tr>
-                <tr style="font-weight: bold;">
-                    <td>Total 42 días</td>
-                    <td id="consumo-total">0 kg</td>
-                </tr>
+                <thead>
+                    <tr>
+                        <th>Fase</th>
+                        <th>Consumo semanal</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="fila-semana">
+                        <td rowspan="3">Inicio</td>
+                        <td id="semana1">0 kg</td>
+                        <td rowspan="3" id="total-inicio">0 kg</td>
+                    </tr>
+                    <tr class="fila-semana">
+                        <td id="semana2">0 kg</td>
+                    </tr>
+                    <tr class="fila-semana">
+                        <td id="semana3">0 kg</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2">Crecimiento</td>
+                        <td id="semana4">0 kg</td>
+                        <td rowspan="2" id="total-crecimiento">0 kg</td>
+                    </tr>
+                    <tr>
+                        <td id="semana5">0 kg</td>
+                    </tr>
+                    <tr>
+                        <td>Engorde</td>
+                        <td id="semana6">0 kg</td>
+                        <td id="total-engorde">0 kg</td>
+                    </tr>
+                    <tr style="font-weight: bold; background: #f0f7ff;">
+                        <td colspan="2">Total 42 días</td>
+                        <td id="consumo-total">0 kg</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -147,21 +167,57 @@
             fechaInicio: null
         };
 
+        // Factores de consumo (gramos/pollo/día)
+        const consumoDiario = {
+            0: 20.30,  // Semana 1 (0-6 días)
+            1: 46.90,  // Semana 2 (7-13 días)
+            2: 90.00,  // Semana 3 (14-20 días)
+            3: 142.10, // Semana 4 (21-27 días)
+            4: 183.70, // Semana 5 (28-34 días)
+            5: 206.60  // Semana 6 (35-41 días)
+        };
+
         // Actualiza toda la pantalla
         function actualizar() {
+            const pollosVivos = datos.pollosIniciales - datos.pollosMuertos;
+            
             // Pollos vivos y muertos
-            document.getElementById('vivos').textContent = datos.pollosIniciales - datos.pollosMuertos;
+            document.getElementById('vivos').textContent = pollosVivos;
             document.getElementById('muertos').textContent = datos.pollosMuertos;
             
-            // Consumo diario (ejemplo: 20g por pollo)
-            const consumoHoy = (datos.pollosIniciales - datos.pollosMuertos) * 0.02;
+            // Consumo diario (según días transcurridos)
+            let diasTranscurridos = 0;
+            if (datos.fechaInicio) {
+                diasTranscurridos = Math.floor((new Date() - new Date(datos.fechaInicio)) / (1000 * 60 * 60 * 24));
+            }
+            const semanaActual = Math.min(Math.floor(diasTranscurridos / 7), 5);
+            const consumoHoy = (pollosVivos * consumoDiario[semanaActual]) / 1000;
             document.getElementById('consumo').textContent = consumoHoy.toFixed(2) + ' kg';
             
-            // Proyección de consumo (valores de ejemplo)
-            document.getElementById('consumo-inicio').textContent = (datos.pollosIniciales * 0.6) + ' kg';
-            document.getElementById('consumo-crecimiento').textContent = (datos.pollosIniciales * 0.9) + ' kg';
-            document.getElementById('consumo-engorde').textContent = (datos.pollosIniciales * 0.6) + ' kg';
-            document.getElementById('consumo-total').textContent = (datos.pollosIniciales * 2.1) + ' kg';
+            // Proyección de consumo (para todos los pollos iniciales)
+            const semana1 = (datos.pollosIniciales * consumoDiario[0] * 7) / 1000;
+            const semana2 = (datos.pollosIniciales * consumoDiario[1] * 7) / 1000;
+            const semana3 = (datos.pollosIniciales * consumoDiario[2] * 7) / 1000;
+            const semana4 = (datos.pollosIniciales * consumoDiario[3] * 7) / 1000;
+            const semana5 = (datos.pollosIniciales * consumoDiario[4] * 7) / 1000;
+            const semana6 = (datos.pollosIniciales * consumoDiario[5] * 7) / 1000;
+            
+            document.getElementById('semana1').textContent = semana1.toFixed(2) + ' kg';
+            document.getElementById('semana2').textContent = semana2.toFixed(2) + ' kg';
+            document.getElementById('semana3').textContent = semana3.toFixed(2) + ' kg';
+            document.getElementById('semana4').textContent = semana4.toFixed(2) + ' kg';
+            document.getElementById('semana5').textContent = semana5.toFixed(2) + ' kg';
+            document.getElementById('semana6').textContent = semana6.toFixed(2) + ' kg';
+            
+            const totalInicio = semana1 + semana2 + semana3;
+            const totalCrecimiento = semana4 + semana5;
+            const totalEngorde = semana6;
+            const totalGeneral = totalInicio + totalCrecimiento + totalEngorde;
+            
+            document.getElementById('total-inicio').textContent = totalInicio.toFixed(2) + ' kg';
+            document.getElementById('total-crecimiento').textContent = totalCrecimiento.toFixed(2) + ' kg';
+            document.getElementById('total-engorde').textContent = totalEngorde.toFixed(2) + ' kg';
+            document.getElementById('consumo-total').textContent = totalGeneral.toFixed(2) + ' kg';
         }
 
         // Inicia nueva crianza
@@ -173,16 +229,19 @@
                 datos.fechaInicio = new Date().toISOString();
                 localStorage.setItem('pollos', JSON.stringify(datos));
                 actualizar();
-                alert('¡Crianza iniciada!');
+                alert('¡Crianza iniciada con ' + cantidad + ' pollos!');
             }
         }
 
         // Registra pollos muertos
         function registrarMuertos() {
             const muertos = parseInt(document.getElementById('muertos-hoy').value) || 0;
-            datos.pollosMuertos += muertos;
-            localStorage.setItem('pollos', JSON.stringify(datos));
-            actualizar();
+            if (muertos > 0) {
+                datos.pollosMuertos += muertos;
+                localStorage.setItem('pollos', JSON.stringify(datos));
+                actualizar();
+                document.getElementById('muertos-hoy').value = '';
+            }
         }
 
         // Carga los datos al iniciar

@@ -208,7 +208,8 @@
             <div class="tab active" onclick="mostrarTab('resumen')">Resumen</div>
             <div class="tab" onclick="mostrarTab('mortalidad')">Mortalidad</div>
             <div class="tab" onclick="mostrarTab('consumo')">Consumo</div>
-            <div class="tab" onclick="mostrarTab('pesos')">Pesos</div> </div>
+            <div class="tab" onclick="mostrarTab('pesos')">Pesos</div> 
+        </div>
 
         <div id="resumen" class="tab-content active">
             <div id="formulario-inicio" class="card">
@@ -241,9 +242,8 @@
                         <h3>Consumo hoy</h3>
                         <p id="consumo-diario-actual">0 kg</p>
                     </div>
-                    <div class="metrica peso-objetivo"> <h3>Peso objetivo hoy</h3>
-                        <p id="peso-objetivo-hoy">0 g</p>
-                    </div>
+                    <div class="metrica peso-objetivo">
+                        <h3>Peso ave fin de semana</h3> <p id="peso-objetivo-semana-actual">0 g</p> </div>
                     <div class="metrica temperatura">
                         <h3>Temperatura ideal</h3>
                         <p id="temperatura">0°C</p>
@@ -339,7 +339,7 @@
 
         <div id="pesos" class="tab-content">
             <div class="card">
-                <h3>Proyección de Pesos Objetivo (por pollo)</h3>
+                <h3>Proyección de Pesos Objetivo (por ave)</h3>
                 <table id="tabla-pesos">
                     <thead>
                         <tr>
@@ -351,32 +351,32 @@
                     <tbody>
                         <tr>
                             <td>Semana 1</td>
-                            <td>Días 0-6</td>
+                            <td>Días 1-7</td>
                             <td id="peso-sem1">0 g</td>
                         </tr>
                         <tr>
                             <td>Semana 2</td>
-                            <td>Días 7-13</td>
+                            <td>Días 8-14</td>
                             <td id="peso-sem2">0 g</td>
                         </tr>
                         <tr>
                             <td>Semana 3</td>
-                            <td>Días 14-20</td>
+                            <td>Días 15-21</td>
                             <td id="peso-sem3">0 g</td>
                         </tr>
                         <tr>
                             <td>Semana 4</td>
-                            <td>Días 21-27</td>
+                            <td>Días 22-28</td>
                             <td id="peso-sem4">0 g</td>
                         </tr>
                         <tr>
                             <td>Semana 5</td>
-                            <td>Días 28-34</td>
+                            <td>Días 29-35</td>
                             <td id="peso-sem5">0 g</td>
                         </tr>
                         <tr>
                             <td>Semana 6</td>
-                            <td>Días 35-41</td>
+                            <td>Días 36-42</td>
                             <td id="peso-sem6">0 g</td>
                         </tr>
                         <tr style="font-weight: bold; background: #f0f7ff;">
@@ -419,13 +419,14 @@
         ];
 
         // Pesos objetivo promedio en GRAMOS al final de cada semana para Cobb 500
+        // Estos valores corresponden al peso al FINAL de la semana indicada.
         const pesosObjetivoSemanal = [
-            180,  // Fin Semana 1
-            455,  // Fin Semana 2
-            900,  // Fin Semana 3
-            1525, // Fin Semana 4
-            2250, // Fin Semana 5
-            2925  // Fin Semana 6 (Peso final a los 42 días)
+            180,  // Fin Semana 1 (Día 7)
+            455,  // Fin Semana 2 (Día 14)
+            900,  // Fin Semana 3 (Día 21)
+            1525, // Fin Semana 4 (Día 28)
+            2250, // Fin Semana 5 (Día 35)
+            2925  // Fin Semana 6 (Día 42 - Peso final)
         ];
 
         // 3. FUNCIÓN PARA GUARDAR DATOS EN LOCALSTORAGE
@@ -446,8 +447,8 @@
                 document.getElementById('fecha-inicio').valueAsDate = new Date();
                 // La proyección de consumo y pesos deben mostrar 0s si no hay crianza
                 actualizarProyeccionConsumo(); 
-                actualizarProyeccionPesos(); // Asegurar que esta también se actualice
-                return; // No hay más que actualizar si no hay crianza
+                actualizarProyeccionPesos(); 
+                return; 
             }
             
             const hoy = new Date();
@@ -456,7 +457,13 @@
             
             // Calcular la semana actual (0-indexado) para las métricas del día
             // Aseguramos que el índice no exceda el tamaño de los arrays de constantes
-            const semanaActual = Math.min(Math.floor(diasTranscurridos / 7), consumoDiarioPorSemana.length - 1); 
+            // Si diasTranscurridos es 0, estamos en el día 0, que es parte de la semana 1.
+            // Por eso Math.floor(diasTranscurridos / 7) funciona:
+            // Días 0-6 -> semana 0 (índice 0, peso objetivo de semana 1)
+            // Días 7-13 -> semana 1 (índice 1, peso objetivo de semana 2)
+            // ...
+            // Días 35-41 -> semana 5 (índice 5, peso objetivo de semana 6)
+            const semanaActualIndex = Math.min(Math.floor(diasTranscurridos / 7), consumoDiarioPorSemana.length - 1); 
             const pollosVivosActuales = datos.pollosIniciales - datos.pollosMuertos;
             
             // Actualizar métricas en la pestaña de resumen
@@ -465,16 +472,18 @@
             document.getElementById('dias-vida').textContent = diasTranscurridos;
             
             // Consumo diario estimado para HOY (basado en pollos vivos actuales)
-            const consumoHoyKg = (pollosVivosActuales * consumoDiarioPorSemana[semanaActual]) / 1000;
+            const consumoHoyKg = (pollosVivosActuales * consumoDiarioPorSemana[semanaActualIndex]) / 1000;
             document.getElementById('consumo-diario-actual').textContent = consumoHoyKg.toFixed(2) + ' kg';
             
-            // **Nuevo: Peso objetivo para la semana actual**
-            // Si los días transcurridos son 0, el objetivo es 0, de lo contrario, el de la semana en curso.
-            const pesoObjetivoActual = diasTranscurridos > 0 ? pesosObjetivoSemanal[semanaActual] : 0;
-            document.getElementById('peso-objetivo-hoy').textContent = `${pesoObjetivoActual} g`;
+            // **Peso objetivo al fin de la semana actual**
+            // Se muestra el peso objetivo correspondiente al final de la semana en la que se encuentra.
+            // Si estamos en la semana 0 (días 0-6), muestra el peso objetivo de la semana 1.
+            // Si estamos en la semana 5 (días 35-41), muestra el peso objetivo de la semana 6.
+            const pesoObjetivoFinSemana = pesosObjetivoSemanal[semanaActualIndex];
+            document.getElementById('peso-objetivo-semana-actual').textContent = `${pesoObjetivoFinSemana} g`;
 
-            document.getElementById('temperatura').textContent = temperaturaIdealPorSemana[semanaActual] + '°C';
-            document.getElementById('humedad').textContent = humedadIdealPorSemana[semanaActual] + '%';
+            document.getElementById('temperatura').textContent = temperaturaIdealPorSemana[semanaActualIndex] + '°C';
+            document.getElementById('humedad').textContent = humedadIdealPorSemana[semanaActualIndex] + '%';
             
             // Calcular y actualizar la barra de progreso (crianza de 42 días)
             const progresoPorcentaje = Math.min((diasTranscurridos / 42) * 100, 100);
@@ -482,7 +491,7 @@
             
             // Siempre actualizar las proyecciones y el historial
             actualizarProyeccionConsumo();
-            actualizarProyeccionPesos(); // Asegurar que esta se llama
+            actualizarProyeccionPesos(); 
             actualizarHistorialMortalidad();
         }
 
@@ -497,7 +506,6 @@
             const semana5Kg = (pollosParaProyeccion * consumoDiarioPorSemana[4] * 7) / 1000;
             const semana6Kg = (pollosParaProyeccion * consumoDiarioPorSemana[5] * 7) / 1000;
             
-            // Actualizar celdas de consumo semanal (ID's con -consumo para evitar conflictos)
             document.getElementById('semana1-consumo').textContent = semana1Kg.toFixed(2) + ' kg';
             document.getElementById('semana2-consumo').textContent = semana2Kg.toFixed(2) + ' kg';
             document.getElementById('semana3-consumo').textContent = semana3Kg.toFixed(2) + ' kg';
@@ -505,7 +513,6 @@
             document.getElementById('semana5-consumo').textContent = semana5Kg.toFixed(2) + ' kg';
             document.getElementById('semana6-consumo').textContent = semana6Kg.toFixed(2) + ' kg';
             
-            // Calcular y actualizar totales por fase (ID's con -consumo para evitar conflictos)
             const totalFaseInicio = semana1Kg + semana2Kg + semana3Kg;
             const totalFaseCrecimiento = semana4Kg + semana5Kg;
             const totalFaseEngorde = semana6Kg;
@@ -539,7 +546,7 @@
             `).join('');
         }
 
-        // **Nueva Función:** Actualizar la tabla de Proyección de Pesos
+        // Función: Actualizar la tabla de Proyección de Pesos
         function actualizarProyeccionPesos() {
             document.getElementById('peso-sem1').textContent = `${pesosObjetivoSemanal[0]} g`;
             document.getElementById('peso-sem2').textContent = `${pesosObjetivoSemanal[1]} g`;
@@ -567,7 +574,7 @@
             // Asegurar que las proyecciones se actualicen al cambiar de pestaña
             if(tabId === 'consumo') {
                 actualizarProyeccionConsumo();
-            } else if (tabId === 'pesos') { // Nuevo: actualizar pesos al mostrar la pestaña de pesos
+            } else if (tabId === 'pesos') { 
                 actualizarProyeccionPesos();
             }
         }
@@ -647,7 +654,6 @@
                 return;
             }
 
-            // Obtener los kilogramos totales por fase de la tabla de proyección de consumo
             const totalKgInicio = parseFloat(document.getElementById('total-fase-inicio-consumo').textContent);
             const totalKgCrecimiento = parseFloat(document.getElementById('total-fase-crecimiento-consumo').textContent);
             const totalKgEngorde = parseFloat(document.getElementById('total-fase-engorde-consumo').textContent);
@@ -674,8 +680,6 @@
 
             const dataToExport = {
                 crianza: datos,
-                // Podrías considerar añadir los precios de alimento actuales si el usuario los ingresa,
-                // pero no se guardan en el localStorage en esta versión.
             };
 
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));

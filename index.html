@@ -32,16 +32,18 @@
             background: #f0f7ff;
             margin-right: 5px;
             border-radius: 5px 5px 0 0;
+            flex-grow: 1; /* Para que las pestañas se distribuyan uniformemente */
+            text-align: center;
         }
         .tab.active {
             background: #4361ee;
             color: white;
         }
         .tab-content {
-            display: none;
+            display: none; /* Por defecto, todas las pestañas de contenido están ocultas */
         }
         .tab-content.active {
-            display: block;
+            display: block; /* Solo la pestaña activa se muestra */
         }
         .card {
             background: white;
@@ -76,6 +78,7 @@
             border: 1px solid #ddd;
             margin: 8px 0;
             font-size: 16px;
+            box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
         }
         button {
             width: 100%;
@@ -273,8 +276,8 @@
 
         // 3. FUNCIÓN GARANTIZADA PARA PROYECCIÓN DE CONSUMO
         function actualizarProyeccionConsumo() {
-            const pollosActuales = (datos.fechaInicio !== null) ? (datos.pollosIniciales - datos.pollosMuertos) : 0;
-            // Si no hay crianza iniciada o los pollos iniciales son 0, la proyección es 0
+            // Usa pollosIniciales para la proyección total a 42 días.
+            // Si no hay crianza iniciada (pollosIniciales es 0), la proyección será 0.
             const pollosParaProyeccion = datos.pollosIniciales || 0; 
             
             // Calcular consumo para cada semana
@@ -311,13 +314,22 @@
 
         // 4. FUNCIONES PRINCIPALES
         function mostrarTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            // Ocultar todos los contenidos de las pestañas
+            document.querySelectorAll('.tab-content').forEach(tabContent => {
+                tabContent.classList.remove('active');
+            });
+            // Remover la clase 'active' de todas las pestañas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
             
+            // Mostrar la pestaña de contenido seleccionada
             document.getElementById(tabId).classList.add('active');
+            // Activar la pestaña clicada
             document.querySelector(`.tab[onclick="mostrarTab('${tabId}')"]`).classList.add('active');
             
             // Si la pestaña de consumo se activa, asegurar que la proyección esté actualizada.
+            // Esta llamada es importante para cuando el usuario cambia manualmente a la pestaña.
             if(tabId === 'consumo') {
                 actualizarProyeccionConsumo();
             }
@@ -331,7 +343,7 @@
             
             if (!tieneCrianza) {
                 document.getElementById('fecha-inicio').valueAsDate = new Date();
-                // Si no hay crianza, aún queremos que la tabla de consumo se muestre con 0s
+                // Si no hay crianza, la proyección de consumo debe mostrar 0s.
                 actualizarProyeccionConsumo(); 
                 return;
             }
@@ -340,25 +352,22 @@
             const fechaInicioCrianza = new Date(datos.fechaInicio);
             const dias = Math.floor((hoy - fechaInicioCrianza) / (1000 * 60 * 60 * 24));
             
-            // La semana se calcula en base a los días de vida (0-6 días es semana 0, 7-13 días es semana 1, etc.)
-            // Aseguramos que el índice no exceda el tamaño del array de consumoDiario.
+            // Calcular la semana actual (0-indexado) para obtener los valores de consumo, temperatura y humedad.
+            // Aseguramos que el índice no exceda el tamaño del array.
             const semanaActual = Math.min(Math.floor(dias / 7), consumoDiario.length - 1); 
             const vivos = datos.pollosIniciales - datos.pollosMuertos;
             
-            // Actualizar métricas
+            // Actualizar métricas en la pestaña de resumen
             document.getElementById('vivos').textContent = vivos;
             document.getElementById('muertos').textContent = datos.pollosMuertos;
             document.getElementById('dias-vida').textContent = dias;
-            // Consumo diario basado en los pollos vivos actuales y la semana actual
+            // Consumo diario estimado para el día actual basado en pollos vivos y la semana
             document.getElementById('consumo').textContent = (vivos * consumoDiario[semanaActual] / 1000).toFixed(2) + ' kg';
             document.getElementById('temperatura').textContent = temperaturaIdeal[semanaActual] + '°C';
             document.getElementById('humedad').textContent = humedadIdeal[semanaActual] + '%';
             document.getElementById('progreso-crianza').style.width = `${Math.min((dias / 42) * 100, 100)}%`;
             
-            // Siempre actualizar la proyección de consumo cuando se actualiza la interfaz general
-            actualizarProyeccionConsumo();
-            
-            // Actualizar historial
+            // Actualizar el historial de mortalidad
             const historial = document.getElementById('historial-mortalidad');
             historial.innerHTML = datos.historialMortalidad.length ? 
                 datos.historialMortalidad
@@ -368,6 +377,10 @@
                         <span>${item.cantidad} pollos</span>
                     </div>`).join('') : 
                 '<p style="text-align: center; color: #666;">No hay registros de mortalidad</p>';
+
+            // **IMPORTANTE:** Siempre actualiza la proyección de consumo cuando se llama a `actualizar()`
+            // Esto asegura que la tabla esté siempre al día, incluso si cambian los pollos iniciales.
+            actualizarProyeccionConsumo();
         }
 
         // 5. FUNCIONES DE INTERACCIÓN
@@ -383,34 +396,45 @@
                     historialMortalidad: []
                 };
                 localStorage.setItem('pollos', JSON.stringify(datos));
-                actualizar(); // Llama a actualizar para refrescar la UI y la proyección
+                actualizar(); // Refresca toda la UI y la proyección
                 alert(`¡Crianza iniciada con ${cantidad} pollos!`);
+                mostrarTab('resumen'); // Vuelve a la pestaña de resumen después de iniciar
             } else {
                 alert('Por favor complete todos los campos correctamente');
             }
         }
 
         function registrarMuertos() {
-            const muertos = parseInt(document.getElementById('muertos-hoy').value) || 0;
-            if (muertos > 0 && datos.pollosIniciales - datos.pollosMuertos >= muertos) { // Validar que no mueran más de los vivos
-                datos.pollosMuertos += muertos;
-                datos.historialMortalidad.push({
-                    fecha: new Date().toISOString(),
-                    cantidad: muertos
-                });
-                localStorage.setItem('pollos', JSON.stringify(datos));
-                actualizar(); // Llama a actualizar para refrescar la UI y la proyección
-                document.getElementById('muertos-hoy').value = '';
-            } else if (muertos > 0) {
-                 alert('No puedes registrar más muertes de los pollos vivos actuales.');
+            const muertosInput = document.getElementById('muertos-hoy');
+            const muertos = parseInt(muertosInput.value) || 0;
+            const pollosVivosActuales = datos.pollosIniciales - datos.pollosMuertos;
+
+            if (muertos <= 0) {
+                alert('Por favor, ingrese un número válido de pollos muertos.');
+                return;
             }
+
+            if (pollosVivosActuales < muertos) {
+                 alert(`No puedes registrar ${muertos} muertes. Solo quedan ${pollosVivosActuales} pollos vivos.`);
+                 return;
+            }
+
+            datos.pollosMuertos += muertos;
+            datos.historialMortalidad.push({
+                fecha: new Date().toISOString(),
+                cantidad: muertos
+            });
+            localStorage.setItem('pollos', JSON.stringify(datos));
+            actualizar(); // Refresca toda la UI y la proyección
+            muertosInput.value = ''; // Limpiar el campo
         }
 
         function eliminarCrianza() {
             if (confirm('¿Estás seguro de eliminar la crianza actual? Esta acción no se puede deshacer.')) {
                 datos = { pollosIniciales: 0, pollosMuertos: 0, fechaInicio: null, historialMortalidad: [] };
                 localStorage.setItem('pollos', JSON.stringify(datos));
-                actualizar(); // Llama a actualizar para refrescar la UI y la proyección
+                actualizar(); // Refresca toda la UI y la proyección
+                mostrarTab('resumen'); // Vuelve a la pestaña de resumen después de eliminar
             }
         }
 
@@ -421,9 +445,9 @@
             const dateStr = today.toISOString().split('T')[0];
             document.getElementById('fecha-inicio').value = dateStr;
             
-            // Mostrar pestaña de resumen y realizar la actualización inicial
-            mostrarTab('resumen');
-            actualizar(); // Asegura que todo el estado inicial se cargue correctamente
+            // Iniciar la UI con el tab de resumen activo y la información cargada
+            mostrarTab('resumen'); // Asegura que el tab de resumen y su contenido estén visibles
+            actualizar(); // Carga los datos guardados y actualiza todas las métricas y tablas.
         });
     </script>
 </body>

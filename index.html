@@ -69,7 +69,6 @@
         .dias { background: linear-gradient(45deg, #7209b7, #3a0ca3); }
         .temperatura { background: linear-gradient(45deg, #f8961e, #f3722c); }
         .humedad { background: linear-gradient(45deg, #4895ef, #3f37c9); }
-        .peso { background: linear-gradient(45deg, #38b000, #70e000); }
         input {
             width: 100%;
             padding: 12px;
@@ -149,7 +148,6 @@
             <div class="tab active" onclick="mostrarTab('resumen')">Resumen</div>
             <div class="tab" onclick="mostrarTab('mortalidad')">Mortalidad</div>
             <div class="tab" onclick="mostrarTab('consumo')">Consumo</div>
-            <div class="tab" onclick="mostrarTab('peso')">Peso</div>
         </div>
 
         <!-- Pestaña de Resumen -->
@@ -184,10 +182,6 @@
                         <h3>Consumo hoy</h3>
                         <p id="consumo">0 kg</p>
                     </div>
-                    <div class="metrica peso">
-                        <h3>Peso ideal</h3>
-                        <p id="peso-ideal">0 g</p>
-                    </div>
                     <div class="metrica temperatura">
                         <h3>Temperatura</h3>
                         <p id="temperatura">0°C</p>
@@ -218,7 +212,7 @@
             </div>
         </div>
 
-        <!-- Pestaña de Consumo - VERSIÓN GARANTIZADA -->
+        <!-- Pestaña de Consumo - VERSIÓN SIMPLIFICADA -->
         <div id="consumo" class="tab-content">
             <div class="card">
                 <h3>Proyección de consumo</h3>
@@ -263,61 +257,10 @@
                 </table>
             </div>
         </div>
-
-        <!-- Pestaña de Peso -->
-        <div id="peso" class="tab-content">
-            <div class="card">
-                <h3>Proyección de peso</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Semana</th>
-                            <th>Peso promedio (g)</th>
-                            <th>Ganancia diaria (g)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="fila-semana">
-                            <td>1</td>
-                            <td id="peso-semana1">180</td>
-                            <td>25.7</td>
-                        </tr>
-                        <tr class="fila-semana">
-                            <td>2</td>
-                            <td id="peso-semana2">440</td>
-                            <td>37.1</td>
-                        </tr>
-                        <tr class="fila-semana">
-                            <td>3</td>
-                            <td id="peso-semana3">840</td>
-                            <td>57.1</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td id="peso-semana4">1,330</td>
-                            <td>70.0</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td id="peso-semana5">1,820</td>
-                            <td>70.0</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td id="peso-semana6">2,450</td>
-                            <td>90.0</td>
-                        </tr>
-                        <tr style="font-weight: bold; background: #f0f7ff;">
-                            <td colspan="3">Peso final esperado: <span id="peso-final">2,450</span> g</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
     <script>
-        // 1. DATOS INICIALES (Versión simplificada)
+        // 1. DATOS INICIALES
         let datos = JSON.parse(localStorage.getItem('pollos')) || {
             pollosIniciales: 0,
             pollosMuertos: 0,
@@ -325,9 +268,8 @@
             historialMortalidad: []
         };
 
-        // 2. CONSTANTES (Mismo formato que en tu versión original)
+        // 2. CONSTANTES DE CONSUMO
         const consumoDiario = [20.30, 46.90, 90.00, 142.10, 183.70, 206.60];
-        const pesoProyectado = [180, 440, 840, 1330, 1820, 2450];
         const temperaturaIdeal = [32.5, 31.0, 29.5, 27.5, 25.5, 23.5];
         const humedadIdeal = [65, 65, 60, 60, 55, 55];
 
@@ -335,17 +277,26 @@
         function actualizarProyeccionConsumo() {
             const pollos = datos.pollosIniciales || 0;
             
-            // Calcular consumo para cada semana (igual que tu versión original)
-            const resultados = consumoDiario.map((consumo, index) => {
-                const valor = (pollos * consumo * 7) / 1000;
-                document.getElementById(`semana${index+1}`).textContent = valor.toFixed(2) + ' kg';
-                return valor;
-            });
+            // Calcular consumo para cada semana
+            const semana1 = (pollos * consumoDiario[0] * 7) / 1000;
+            const semana2 = (pollos * consumoDiario[1] * 7) / 1000;
+            const semana3 = (pollos * consumoDiario[2] * 7) / 1000;
+            const semana4 = (pollos * consumoDiario[3] * 7) / 1000;
+            const semana5 = (pollos * consumoDiario[4] * 7) / 1000;
+            const semana6 = (pollos * consumoDiario[5] * 7) / 1000;
+            
+            // Actualizar tabla
+            document.getElementById('semana1').textContent = semana1.toFixed(2) + ' kg';
+            document.getElementById('semana2').textContent = semana2.toFixed(2) + ' kg';
+            document.getElementById('semana3').textContent = semana3.toFixed(2) + ' kg';
+            document.getElementById('semana4').textContent = semana4.toFixed(2) + ' kg';
+            document.getElementById('semana5').textContent = semana5.toFixed(2) + ' kg';
+            document.getElementById('semana6').textContent = semana6.toFixed(2) + ' kg';
             
             // Calcular totales
-            const totalInicio = resultados[0] + resultados[1] + resultados[2];
-            const totalCrecimiento = resultados[3] + resultados[4];
-            const totalEngorde = resultados[5];
+            const totalInicio = semana1 + semana2 + semana3;
+            const totalCrecimiento = semana4 + semana5;
+            const totalEngorde = semana6;
             const totalGeneral = totalInicio + totalCrecimiento + totalEngorde;
             
             // Actualizar totales
@@ -354,10 +305,10 @@
             document.getElementById('total-engorde').textContent = totalEngorde.toFixed(2) + ' kg';
             document.getElementById('consumo-total').textContent = totalGeneral.toFixed(2) + ' kg';
             
-            console.log("Proyección actualizada:", resultados); // Para depuración
+            console.log("Proyección actualizada correctamente");
         }
 
-        // 4. FUNCIONES PRINCIPALES (Versión simplificada)
+        // 4. FUNCIONES PRINCIPALES
         function mostrarTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -389,12 +340,11 @@
             document.getElementById('muertos').textContent = datos.pollosMuertos;
             document.getElementById('dias-vida').textContent = dias;
             document.getElementById('consumo').textContent = (vivos * consumoDiario[semana] / 1000).toFixed(2) + ' kg';
-            document.getElementById('peso-ideal').textContent = pesoProyectado[semana] + ' g';
             document.getElementById('temperatura').textContent = temperaturaIdeal[semana] + '°C';
             document.getElementById('humedad').textContent = humedadIdeal[semana] + '%';
             document.getElementById('progreso-crianza').style.width = `${Math.min((dias / 42) * 100, 100)}%`;
             
-            // Actualizar proyecciones
+            // Actualizar proyección
             actualizarProyeccionConsumo();
             
             // Actualizar historial
@@ -409,7 +359,7 @@
                 '<p style="text-align: center; color: #666;">No hay registros de mortalidad</p>';
         }
 
-        // 5. FUNCIONES DE INTERACCIÓN (Versión original mejorada)
+        // 5. FUNCIONES DE INTERACCIÓN
         function iniciarCrianza() {
             const cantidad = parseInt(document.getElementById('pollos-iniciales').value);
             const fecha = document.getElementById('fecha-inicio').value;
@@ -451,7 +401,7 @@
             }
         }
 
-        // 6. INICIALIZACIÓN (Versión garantizada)
+        // 6. INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', function() {
             // Establecer fecha actual
             const today = new Date();
@@ -463,8 +413,6 @@
             
             // Forzar actualización inicial
             actualizarProyeccionConsumo();
-            
-            console.log("Aplicación iniciada correctamente"); // Para depuración
         });
     </script>
 </body>

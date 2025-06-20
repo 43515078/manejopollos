@@ -212,45 +212,49 @@
             </div>
         </div>
 
-        <!-- Pestaña de Consumo - VERSIÓN SIMPLIFICADA -->
+        <!-- Pestaña de Consumo - CORREGIDA -->
         <div id="consumo" class="tab-content">
             <div class="card">
                 <h3>Proyección de consumo</h3>
                 <table id="tabla-consumo">
                     <thead>
                         <tr>
-                            <th>Fase</th>
+                            <th>Semana</th>
                             <th>Consumo semanal</th>
-                            <th>Total</th>
+                            <th>Total fase</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="fila-semana">
-                            <td rowspan="3">Inicio</td>
+                            <td>Semana 1</td>
                             <td id="semana1">0 kg</td>
                             <td rowspan="3" id="total-inicio">0 kg</td>
                         </tr>
                         <tr class="fila-semana">
+                            <td>Semana 2</td>
                             <td id="semana2">0 kg</td>
                         </tr>
                         <tr class="fila-semana">
+                            <td>Semana 3</td>
                             <td id="semana3">0 kg</td>
                         </tr>
                         <tr>
-                            <td rowspan="2">Crecimiento</td>
+                            <td>Semana 4</td>
                             <td id="semana4">0 kg</td>
                             <td rowspan="2" id="total-crecimiento">0 kg</td>
                         </tr>
                         <tr>
+                            <td>Semana 5</td>
                             <td id="semana5">0 kg</td>
                         </tr>
                         <tr>
-                            <td>Engorde</td>
+                            <td>Semana 6</td>
                             <td id="semana6">0 kg</td>
                             <td id="total-engorde">0 kg</td>
                         </tr>
                         <tr style="font-weight: bold; background: #f0f7ff;">
-                            <td colspan="2">Total 42 días</td>
+                            <td>Total 42 días</td>
+                            <td></td>
                             <td id="consumo-total">0 kg</td>
                         </tr>
                     </tbody>
@@ -412,7 +416,7 @@
             mostrarTab('resumen');
             
             // Forzar actualización inicial
-            actualizarProyeccionConsumo();
+            actualizar();
         });
     </script>
 </body>

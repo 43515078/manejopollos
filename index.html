@@ -4,6 +4,7 @@
     <title>🐔 Pollos COB500</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Estilos anteriores se mantienen igual */
         body {
             font-family: Arial, sans-serif;
             background: #f5f7fa;
@@ -376,6 +377,9 @@
             
             document.getElementById(tabId).classList.add('active');
             document.querySelector(`.tab[onclick="mostrarTab('${tabId}')"]`).classList.add('active');
+            
+            // Forzar actualización de datos al cambiar de pestaña
+            actualizar();
         }
 
         // Eliminar la crianza actual
@@ -403,7 +407,9 @@
             // Si no hay crianza, mostrar solo el formulario y salir
             if (!tieneCrianza) {
                 // Establecer fecha actual como valor por defecto
-                document.getElementById('fecha-inicio').valueAsDate = new Date();
+                const today = new Date();
+                const dateStr = today.toISOString().split('T')[0];
+                document.getElementById('fecha-inicio').value = dateStr;
                 return;
             }
             
@@ -520,11 +526,11 @@
         }
 
         // Carga los datos al iniciar
-        window.onload = function() {
+        document.addEventListener('DOMContentLoaded', function() {
             actualizar();
             // Mostrar pestaña de resumen por defecto
             mostrarTab('resumen');
-        };
+        });
     </script>
 </body>
 </html>

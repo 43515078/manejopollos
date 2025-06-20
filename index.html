@@ -218,11 +218,11 @@
             </div>
         </div>
 
-        <!-- Pestaña de Consumo - VERSIÓN SIMPLIFICADA QUE SIEMPRE SE MUESTRA -->
+        <!-- Pestaña de Consumo -->
         <div id="consumo" class="tab-content">
             <div class="card">
                 <h3>Proyección de consumo</h3>
-                <table id="tabla-consumo">
+                <table>
                     <thead>
                         <tr>
                             <th>Fase</th>
@@ -317,7 +317,7 @@
     </div>
 
     <script>
-        // 1. DATOS INICIALES
+        // 1. DATOS Y CONFIGURACIÓN (Versión simplificada del código original)
         let datos = JSON.parse(localStorage.getItem('pollos')) || {
             pollosIniciales: 0,
             pollosMuertos: 0,
@@ -325,32 +325,27 @@
             historialMortalidad: []
         };
 
-        // 2. CONSTANTES DE CONSUMO Y PESO
-        const consumoDiario = [20.30, 46.90, 90.00, 142.10, 183.70, 206.60];
+        // Factores de consumo (igual que en tu versión funcional)
+        const consumoDiario = {
+            0: 20.30,  // Semana 1 (0-6 días)
+            1: 46.90,  // Semana 2 (7-13 días)
+            2: 90.00,  // Semana 3 (14-20 días)
+            3: 142.10, // Semana 4 (21-27 días)
+            4: 183.70, // Semana 5 (28-34 días)
+            5: 206.60  // Semana 6 (35-41 días)
+        };
+
+        // Proyección de peso
         const pesoProyectado = [180, 440, 840, 1330, 1820, 2450];
         const temperaturaIdeal = [32.5, 31.0, 29.5, 27.5, 25.5, 23.5];
         const humedadIdeal = [65, 65, 60, 60, 55, 55];
 
-        // 3. FUNCIONES PRINCIPALES
+        // 2. FUNCIONES BÁSICAS (Manteniendo la lógica de tu versión que funcionaba)
         function mostrarTab(tabId) {
-            // Oculta todos los contenidos y desactiva todas las pestañas
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            
-            // Activa la pestaña seleccionada
             document.getElementById(tabId).classList.add('active');
             document.querySelector(`.tab[onclick="mostrarTab('${tabId}')"]`).classList.add('active');
-            
-            // Fuerza la actualización de datos al cambiar de pestaña
-            if(tabId === 'consumo') actualizarProyeccionConsumo();
-        }
-
-        function eliminarCrianza() {
-            if (confirm('¿Estás seguro de eliminar la crianza actual? Todos los datos se perderán.')) {
-                datos = { pollosIniciales: 0, pollosMuertos: 0, fechaInicio: null, historialMortalidad: [] };
-                localStorage.setItem('pollos', JSON.stringify(datos));
-                actualizar();
-            }
         }
 
         function calcularDiasTranscurridos() {
@@ -359,32 +354,38 @@
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        // 4. ACTUALIZACIÓN DE PROYECCIÓN DE CONSUMO (SIMPLIFICADA)
+        // 3. ACTUALIZACIÓN DE PROYECCIÓN DE CONSUMO (Versión original que funcionaba)
         function actualizarProyeccionConsumo() {
             const pollos = datos.pollosIniciales || 0;
             
-            // Calcular consumo para cada semana
-            const semanas = consumoDiario.map(consumo => (pollos * consumo * 7 / 1000).toFixed(2) + ' kg');
+            // Cálculo directo como en tu versión funcional
+            const semana1 = (pollos * consumoDiario[0] * 7) / 1000;
+            const semana2 = (pollos * consumoDiario[1] * 7) / 1000;
+            const semana3 = (pollos * consumoDiario[2] * 7) / 1000;
+            const semana4 = (pollos * consumoDiario[3] * 7) / 1000;
+            const semana5 = (pollos * consumoDiario[4] * 7) / 1000;
+            const semana6 = (pollos * consumoDiario[5] * 7) / 1000;
             
-            // Actualizar valores en la tabla
-            semanas.forEach((valor, index) => {
-                document.getElementById(`semana${index+1}`).textContent = valor;
-            });
+            // Actualización directa de la tabla
+            document.getElementById('semana1').textContent = semana1.toFixed(2) + ' kg';
+            document.getElementById('semana2').textContent = semana2.toFixed(2) + ' kg';
+            document.getElementById('semana3').textContent = semana3.toFixed(2) + ' kg';
+            document.getElementById('semana4').textContent = semana4.toFixed(2) + ' kg';
+            document.getElementById('semana5').textContent = semana5.toFixed(2) + ' kg';
+            document.getElementById('semana6').textContent = semana6.toFixed(2) + ' kg';
             
-            // Calcular totales
-            const totalInicio = semanas.slice(0, 3).reduce((sum, val) => sum + parseFloat(val), 0);
-            const totalCrecimiento = semanas.slice(3, 5).reduce((sum, val) => sum + parseFloat(val), 0);
-            const totalEngorde = parseFloat(semanas[5]);
+            const totalInicio = semana1 + semana2 + semana3;
+            const totalCrecimiento = semana4 + semana5;
+            const totalEngorde = semana6;
             const totalGeneral = totalInicio + totalCrecimiento + totalEngorde;
             
-            // Actualizar totales
             document.getElementById('total-inicio').textContent = totalInicio.toFixed(2) + ' kg';
             document.getElementById('total-crecimiento').textContent = totalCrecimiento.toFixed(2) + ' kg';
             document.getElementById('total-engorde').textContent = totalEngorde.toFixed(2) + ' kg';
             document.getElementById('consumo-total').textContent = totalGeneral.toFixed(2) + ' kg';
         }
 
-        // 5. FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN
+        // 4. FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN (Combinando ambas versiones)
         function actualizar() {
             const tieneCrianza = datos.fechaInicio !== null;
             
@@ -394,6 +395,8 @@
             
             if (!tieneCrianza) {
                 document.getElementById('fecha-inicio').valueAsDate = new Date();
+                // Limpiar proyección
+                actualizarProyeccionConsumo();
                 return;
             }
             
@@ -411,7 +414,7 @@
             document.getElementById('humedad').textContent = humedadIdeal[semana] + '%';
             document.getElementById('progreso-crianza').style.width = `${Math.min((dias / 42) * 100, 100)}%`;
             
-            // Actualizar proyecciones
+            // Actualizar proyecciones (usando la versión original que funcionaba)
             actualizarProyeccionConsumo();
             
             // Actualizar historial
@@ -426,7 +429,7 @@
                 '<p style="text-align: center; color: #666;">No hay registros de mortalidad</p>';
         }
 
-        // 6. FUNCIONES DE INTERACCIÓN
+        // 5. FUNCIONES DE INTERACCIÓN (Manteniendo la lógica original)
         function iniciarCrianza() {
             const cantidad = parseInt(document.getElementById('pollos-iniciales').value);
             const fecha = document.getElementById('fecha-inicio').value;
@@ -460,7 +463,20 @@
             }
         }
 
-        // 7. INICIALIZACIÓN
+        function eliminarCrianza() {
+            if (confirm('¿Estás seguro de eliminar la crianza actual? Todos los datos se perderán.')) {
+                datos = {
+                    pollosIniciales: 0,
+                    pollosMuertos: 0,
+                    fechaInicio: null,
+                    historialMortalidad: []
+                };
+                localStorage.setItem('pollos', JSON.stringify(datos));
+                actualizar();
+            }
+        }
+
+        // 6. INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('fecha-inicio').valueAsDate = new Date();
             actualizar();

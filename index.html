@@ -4,44 +4,22 @@
     <title>🐔 Pollos COB500</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Estilos Generales */
         body {
             font-family: Arial, sans-serif;
             background: #f5f7fa;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             color: #333;
         }
         .container {
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
-            padding: 15px;
         }
         h1 {
             color: #4361ee;
             text-align: center;
-            margin-bottom: 15px;
-        }
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        .tab {
-            padding: 10px 15px;
-            cursor: pointer;
-            background: #f0f7ff;
-            margin-right: 5px;
-            border-radius: 5px 5px 0 0;
-        }
-        .tab.active {
-            background: #4361ee;
-            color: white;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
+            margin-bottom: 25px;
         }
         .card {
             background: white;
@@ -50,56 +28,49 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-        .metricas {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+        
+        /* Estilos para Móviles */
+        @media (max-width: 600px) {
+            body {
+                padding-bottom: 70px;
+            }
+            #modo-movil {
+                display: flex;
+                justify-content: space-around;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #4361ee;
+                padding: 10px 0;
+                z-index: 1000;
+            }
+            #modo-movil button {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 20px;
+            }
+            .seccion {
+                display: none;
+            }
+            .seccion-activa {
+                display: block;
+            }
         }
-        .metrica {
+        
+        /* Estilos Mejorados */
+        .indicadores {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .indicador {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
-            padding: 15px;
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
-        }
-        .vivos { background: linear-gradient(45deg, #4cc9f0, #4361ee); }
-        .muertos { background: linear-gradient(45deg, #f72585, #f8961e); }
-        .consumo { background: linear-gradient(45deg, #4CAF50, #8BC34A); }
-        .dias { background: linear-gradient(45deg, #7209b7, #3a0ca3); }
-        .temperatura { background: linear-gradient(45deg, #f8961e, #f3722c); }
-        .humedad { background: linear-gradient(45deg, #4895ef, #3f37c9); }
-        .peso { background: linear-gradient(45deg, #38b000, #70e000); }
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            margin: 8px 0;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 16px;
-        }
-        .btn-iniciar {
-            background: #4361ee;
-        }
-        .btn-eliminar {
-            background: #f72585;
-        }
-        .btn-registrar {
-            background: #4361ee;
-        }
-        button:hover {
-            opacity: 0.9;
+            background: #f0f7ff;
         }
         table {
             width: 100%;
@@ -114,30 +85,62 @@
         th {
             background: #f0f7ff;
         }
-        .fila-semana {
-            background: #f9f9f9;
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin: 8px 0;
+            font-size: 16px;
         }
-        .historial-mortalidad {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .historial-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-        }
-        .progress-bar {
-            height: 10px;
-            background: #e0e0e0;
-            border-radius: 5px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        .progress {
-            height: 100%;
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
             background: #4361ee;
-            width: 0%;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .notificacion {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            animation: fadeIn 0.5s;
+            z-index: 1000;
+        }
+        .exito {
+            background: #4CAF50;
+        }
+        .alerta {
+            background: #FF9800;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Modo Nocturno */
+        .modo-nocturno {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        .modo-nocturno .card {
+            background-color: #1e1e1e;
+        }
+        .modo-nocturno input,
+        .modo-nocturno table {
+            background-color: #2d2d2d;
+            color: white;
         }
     </style>
 </head>
@@ -145,81 +148,71 @@
     <div class="container">
         <h1>🐔 MANEJO DE POLLOS COB500</h1>
         
-        <div class="tabs">
-            <div class="tab active" onclick="mostrarTab('resumen')">Resumen</div>
-            <div class="tab" onclick="mostrarTab('mortalidad')">Mortalidad</div>
-            <div class="tab" onclick="mostrarTab('consumo')">Consumo</div>
-            <div class="tab" onclick="mostrarTab('peso')">Peso</div>
+        <!-- Panel de Navegación Móvil -->
+        <div id="modo-movil">
+            <button onclick="mostrarSeccion('resumen')">📊</button>
+            <button onclick="mostrarSeccion('registro')">✍️</button>
+            <button onclick="mostrarSeccion('proyeccion')">📈</button>
+            <button onclick="toggleModoNocturno()">🌙</button>
         </div>
-
-        <!-- Pestaña de Resumen -->
-        <div id="resumen" class="tab-content active">
-            <div id="formulario-inicio" class="card">
+        
+        <!-- Sección de Resumen -->
+        <div id="resumen" class="seccion seccion-activa">
+            <div class="card">
+                <div class="indicadores">
+                    <div class="indicador">
+                        <span>Pollos vivos</span>
+                        <strong id="vivos">0</strong>
+                    </div>
+                    <div class="indicador">
+                        <span>Pollos muertos</span>
+                        <strong id="muertos">0</strong>
+                    </div>
+                </div>
+                <div class="indicadores">
+                    <div class="indicador">
+                        <span>Días transcurridos</span>
+                        <strong id="dias-transcurridos">0</strong>
+                    </div>
+                    <div class="indicador">
+                        <span>Consumo hoy</span>
+                        <strong id="consumo">0 kg</strong>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📅 Historial de Mortalidad</h3>
+                <table id="historial-mortalidad">
+                    <tr><th>Fecha</th><th>Cantidad</th></tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Sección de Registro -->
+        <div id="registro" class="seccion">
+            <div class="card">
                 <h3>Iniciar nueva crianza</h3>
                 <input type="number" id="pollos-iniciales" placeholder="Cantidad de pollos">
-                <input type="date" id="fecha-inicio">
-                <button class="btn-iniciar" onclick="iniciarCrianza()">🟢 Iniciar Crianza</button>
+                <button onclick="iniciarCrianza()">🟢 Iniciar</button>
             </div>
 
-            <div id="resumen-crianza" class="card" style="display: none;">
-                <h3>Resumen de Crianza</h3>
-                <div class="progress-bar">
-                    <div class="progress" id="progreso-crianza"></div>
-                </div>
-                
-                <div class="metricas">
-                    <div class="metrica vivos">
-                        <h3>Pollos vivos</h3>
-                        <p id="vivos">0</p>
-                    </div>
-                    <div class="metrica muertos">
-                        <h3>Pollos muertos</h3>
-                        <p id="muertos">0</p>
-                    </div>
-                    <div class="metrica dias">
-                        <h3>Días de vida</h3>
-                        <p id="dias-vida">0</p>
-                    </div>
-                    <div class="metrica consumo">
-                        <h3>Consumo hoy</h3>
-                        <p id="consumo">0 kg</p>
-                    </div>
-                    <div class="metrica peso">
-                        <h3>Peso ideal</h3>
-                        <p id="peso-ideal">0 g</p>
-                    </div>
-                    <div class="metrica temperatura">
-                        <h3>Temperatura</h3>
-                        <p id="temperatura">0°C</p>
-                    </div>
-                    <div class="metrica humedad">
-                        <h3>Humedad</h3>
-                        <p id="humedad">0%</p>
-                    </div>
-                </div>
-                
-                <button class="btn-eliminar" onclick="eliminarCrianza()">❌ Eliminar crianza actual</button>
-            </div>
-        </div>
-
-        <!-- Pestaña de Mortalidad -->
-        <div id="mortalidad" class="tab-content">
             <div class="card">
                 <h3>Registrar mortalidad</h3>
                 <input type="number" id="muertos-hoy" placeholder="Pollos muertos hoy">
-                <button class="btn-registrar" onclick="registrarMuertos()">✍️ Registrar</button>
+                <button onclick="registrarMuertos()">✍️ Registrar</button>
             </div>
-
+            
             <div class="card">
-                <h3>Historial de mortalidad</h3>
-                <div class="historial-mortalidad" id="historial-mortalidad">
-                    <p style="text-align: center; color: #666;">No hay registros de mortalidad</p>
-                </div>
+                <h3>💵 Calculadora de Costos</h3>
+                <input type="number" id="precio-alimento" placeholder="Precio por kg ($)">
+                <button onclick="calcularCostos()">Calcular</button>
+                <div id="resultado-costos" style="margin-top: 10px;"></div>
             </div>
         </div>
-
-        <!-- Pestaña de Consumo -->
-        <div id="consumo" class="tab-content">
+        
+        <!-- Sección de Proyección -->
+        <div id="proyeccion" class="seccion">
             <div class="card">
                 <h3>Proyección de consumo</h3>
                 <table>
@@ -231,15 +224,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="fila-semana">
+                        <tr>
                             <td rowspan="3">Inicio</td>
                             <td id="semana1">0 kg</td>
                             <td rowspan="3" id="total-inicio">0 kg</td>
                         </tr>
-                        <tr class="fila-semana">
+                        <tr>
                             <td id="semana2">0 kg</td>
                         </tr>
-                        <tr class="fila-semana">
+                        <tr>
                             <td id="semana3">0 kg</td>
                         </tr>
                         <tr>
@@ -262,70 +255,29 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        <!-- Pestaña de Peso -->
-        <div id="peso" class="tab-content">
+            
             <div class="card">
-                <h3>Proyección de peso</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Semana</th>
-                            <th>Peso promedio (g)</th>
-                            <th>Ganancia diaria (g)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="fila-semana">
-                            <td>1</td>
-                            <td id="peso-semana1">180</td>
-                            <td>25.7</td>
-                        </tr>
-                        <tr class="fila-semana">
-                            <td>2</td>
-                            <td id="peso-semana2">440</td>
-                            <td>37.1</td>
-                        </tr>
-                        <tr class="fila-semana">
-                            <td>3</td>
-                            <td id="peso-semana3">840</td>
-                            <td>57.1</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td id="peso-semana4">1,330</td>
-                            <td>70.0</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td id="peso-semana5">1,820</td>
-                            <td>70.0</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td id="peso-semana6">2,450</td>
-                            <td>90.0</td>
-                        </tr>
-                        <tr style="font-weight: bold; background: #f0f7ff;">
-                            <td colspan="3">Peso final esperado: <span id="peso-final">2,450</span> g</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <h3>🌤️ Clima Recomendado</h3>
+                <div id="clima-recomendado">
+                    <p>Temperatura ideal: 24-28°C</p>
+                    <p>Humedad: 50-70%</p>
+                </div>
             </div>
+            
+            <button onclick="exportarDatos()" style="background: #6d4c41;">📤 Exportar Datos</button>
         </div>
     </div>
 
     <script>
-        // 1. DATOS Y CONFIGURACIÓN (Versión simplificada del código original)
+        // Datos persistentes
         let datos = JSON.parse(localStorage.getItem('pollos')) || {
             pollosIniciales: 0,
             pollosMuertos: 0,
             fechaInicio: null,
-            historialMortalidad: []
+            historialMuertos: []
         };
 
-        // Factores de consumo (igual que en tu versión funcional)
+        // Factores de consumo (gramos/pollo/día)
         const consumoDiario = {
             0: 20.30,  // Semana 1 (0-6 días)
             1: 46.90,  // Semana 2 (7-13 días)
@@ -335,38 +287,45 @@
             5: 206.60  // Semana 6 (35-41 días)
         };
 
-        // Proyección de peso
-        const pesoProyectado = [180, 440, 840, 1330, 1820, 2450];
-        const temperaturaIdeal = [32.5, 31.0, 29.5, 27.5, 25.5, 23.5];
-        const humedadIdeal = [65, 65, 60, 60, 55, 55];
-
-        // 2. FUNCIONES BÁSICAS (Manteniendo la lógica de tu versión que funcionaba)
-        function mostrarTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.querySelector(`.tab[onclick="mostrarTab('${tabId}')"]`).classList.add('active');
+        // Funciones principales
+        function actualizar() {
+            const pollosVivos = datos.pollosIniciales - datos.pollosMuertos;
+            const dias = calcularDias();
+            
+            // Actualizar valores principales
+            document.getElementById('vivos').textContent = pollosVivos;
+            document.getElementById('muertos').textContent = datos.pollosMuertos;
+            document.getElementById('dias-transcurridos').textContent = dias;
+            
+            // Calcular consumo diario
+            const semanaActual = Math.min(Math.floor(dias / 7), 5);
+            const consumoHoy = (pollosVivos * consumoDiario[semanaActual]) / 1000;
+            document.getElementById('consumo').textContent = consumoHoy.toFixed(2) + ' kg';
+            
+            // Actualizar proyección
+            actualizarProyeccion();
+            
+            // Actualizar historial
+            actualizarHistorial();
+            
+            // Verificar alertas
+            verificarAlertas();
         }
 
-        function calcularDiasTranscurridos() {
+        function calcularDias() {
             if (!datos.fechaInicio) return 0;
-            const diff = new Date() - new Date(datos.fechaInicio);
-            return Math.floor(diff / (1000 * 60 * 60 * 24));
+            const unDia = 24 * 60 * 60 * 1000;
+            return Math.floor((new Date() - new Date(datos.fechaInicio)) / unDia);
         }
 
-        // 3. ACTUALIZACIÓN DE PROYECCIÓN DE CONSUMO (Versión original que funcionaba)
-        function actualizarProyeccionConsumo() {
-            const pollos = datos.pollosIniciales || 0;
+        function actualizarProyeccion() {
+            const semana1 = (datos.pollosIniciales * consumoDiario[0] * 7) / 1000;
+            const semana2 = (datos.pollosIniciales * consumoDiario[1] * 7) / 1000;
+            const semana3 = (datos.pollosIniciales * consumoDiario[2] * 7) / 1000;
+            const semana4 = (datos.pollosIniciales * consumoDiario[3] * 7) / 1000;
+            const semana5 = (datos.pollosIniciales * consumoDiario[4] * 7) / 1000;
+            const semana6 = (datos.pollosIniciales * consumoDiario[5] * 7) / 1000;
             
-            // Cálculo directo como en tu versión funcional
-            const semana1 = (pollos * consumoDiario[0] * 7) / 1000;
-            const semana2 = (pollos * consumoDiario[1] * 7) / 1000;
-            const semana3 = (pollos * consumoDiario[2] * 7) / 1000;
-            const semana4 = (pollos * consumoDiario[3] * 7) / 1000;
-            const semana5 = (pollos * consumoDiario[4] * 7) / 1000;
-            const semana6 = (pollos * consumoDiario[5] * 7) / 1000;
-            
-            // Actualización directa de la tabla
             document.getElementById('semana1').textContent = semana1.toFixed(2) + ' kg';
             document.getElementById('semana2').textContent = semana2.toFixed(2) + ' kg';
             document.getElementById('semana3').textContent = semana3.toFixed(2) + ' kg';
@@ -385,67 +344,30 @@
             document.getElementById('consumo-total').textContent = totalGeneral.toFixed(2) + ' kg';
         }
 
-        // 4. FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN (Combinando ambas versiones)
-        function actualizar() {
-            const tieneCrianza = datos.fechaInicio !== null;
+        function actualizarHistorial() {
+            const tabla = document.getElementById('historial-mortalidad');
+            // Mantener el encabezado
+            tabla.innerHTML = '<tr><th>Fecha</th><th>Cantidad</th></tr>';
             
-            // Mostrar/ocultar formulario/resumen
-            document.getElementById('formulario-inicio').style.display = tieneCrianza ? 'none' : 'block';
-            document.getElementById('resumen-crianza').style.display = tieneCrianza ? 'block' : 'none';
-            
-            if (!tieneCrianza) {
-                document.getElementById('fecha-inicio').valueAsDate = new Date();
-                // Limpiar proyección
-                actualizarProyeccionConsumo();
-                return;
-            }
-            
-            const dias = calcularDiasTranscurridos();
-            const semana = Math.min(Math.floor(dias / 7), 5);
-            const vivos = datos.pollosIniciales - datos.pollosMuertos;
-            
-            // Actualizar métricas principales
-            document.getElementById('vivos').textContent = vivos;
-            document.getElementById('muertos').textContent = datos.pollosMuertos;
-            document.getElementById('dias-vida').textContent = dias;
-            document.getElementById('consumo').textContent = (vivos * consumoDiario[semana] / 1000).toFixed(2) + ' kg';
-            document.getElementById('peso-ideal').textContent = pesoProyectado[semana].toLocaleString() + ' g';
-            document.getElementById('temperatura').textContent = temperaturaIdeal[semana] + '°C';
-            document.getElementById('humedad').textContent = humedadIdeal[semana] + '%';
-            document.getElementById('progreso-crianza').style.width = `${Math.min((dias / 42) * 100, 100)}%`;
-            
-            // Actualizar proyecciones (usando la versión original que funcionaba)
-            actualizarProyeccionConsumo();
-            
-            // Actualizar historial
-            const historial = document.getElementById('historial-mortalidad');
-            historial.innerHTML = datos.historialMortalidad.length ? 
-                datos.historialMortalidad
-                    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-                    .map(item => `<div class="historial-item">
-                        <span>${new Date(item.fecha).toLocaleDateString()}</span>
-                        <span>${item.cantidad} pollos</span>
-                    </div>`).join('') : 
-                '<p style="text-align: center; color: #666;">No hay registros de mortalidad</p>';
+            // Agregar registros
+            datos.historialMuertos.forEach(registro => {
+                const nuevaFila = `<tr><td>${registro.fecha}</td><td>${registro.cantidad}</td></tr>`;
+                tabla.innerHTML += nuevaFila;
+            });
         }
 
-        // 5. FUNCIONES DE INTERACCIÓN (Manteniendo la lógica original)
+        // Funciones de interacción
         function iniciarCrianza() {
             const cantidad = parseInt(document.getElementById('pollos-iniciales').value);
-            const fecha = document.getElementById('fecha-inicio').value;
-            
-            if (cantidad > 0 && fecha) {
-                datos = {
-                    pollosIniciales: cantidad,
-                    pollosMuertos: 0,
-                    fechaInicio: fecha,
-                    historialMortalidad: []
-                };
-                localStorage.setItem('pollos', JSON.stringify(datos));
+            if (cantidad > 0) {
+                datos.pollosIniciales = cantidad;
+                datos.pollosMuertos = 0;
+                datos.fechaInicio = new Date().toISOString();
+                datos.historialMuertos = [];
+                guardarDatos();
                 actualizar();
-                alert(`¡Crianza iniciada con ${cantidad} pollos!`);
-            } else {
-                alert('Por favor complete todos los campos correctamente');
+                mostrarNotificacion('¡Crianza iniciada con ' + cantidad + ' pollos!', 'exito');
+                document.getElementById('pollos-iniciales').value = '';
             }
         }
 
@@ -453,35 +375,84 @@
             const muertos = parseInt(document.getElementById('muertos-hoy').value) || 0;
             if (muertos > 0) {
                 datos.pollosMuertos += muertos;
-                datos.historialMortalidad.push({
-                    fecha: new Date().toISOString(),
+                datos.historialMuertos.push({
+                    fecha: new Date().toLocaleDateString(),
                     cantidad: muertos
                 });
-                localStorage.setItem('pollos', JSON.stringify(datos));
+                guardarDatos();
                 actualizar();
+                mostrarNotificacion('Registrados ' + muertos + ' pollos muertos', 'exito');
                 document.getElementById('muertos-hoy').value = '';
             }
         }
 
-        function eliminarCrianza() {
-            if (confirm('¿Estás seguro de eliminar la crianza actual? Todos los datos se perderán.')) {
-                datos = {
-                    pollosIniciales: 0,
-                    pollosMuertos: 0,
-                    fechaInicio: null,
-                    historialMortalidad: []
-                };
-                localStorage.setItem('pollos', JSON.stringify(datos));
-                actualizar();
+        function guardarDatos() {
+            localStorage.setItem('pollos', JSON.stringify(datos));
+        }
+
+        // Funciones de las mejoras
+        function mostrarNotificacion(mensaje, tipo = "exito") {
+            const notificacion = document.createElement("div");
+            notificacion.className = `notificacion ${tipo}`;
+            notificacion.innerHTML = mensaje;
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.remove();
+            }, 3000);
+        }
+
+        function verificarAlertas() {
+            if (datos.pollosIniciales === 0) return;
+            
+            const tasaMortalidad = (datos.pollosMuertos / datos.pollosIniciales) * 100;
+            if (tasaMortalidad > 5) {
+                mostrarNotificacion(`⚠️ Alta mortalidad: ${tasaMortalidad.toFixed(1)}%`, "alerta");
             }
         }
 
-        // 6. INICIALIZACIÓN
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('fecha-inicio').valueAsDate = new Date();
-            actualizar();
-            mostrarTab('resumen');
-        });
+        function calcularCostos() {
+            const precioKg = parseFloat(document.getElementById('precio-alimento').value);
+            if (isNaN(precioKg)) return;
+            
+            const consumoTotal = parseFloat(document.getElementById('consumo-total').textContent);
+            const costoTotal = (consumoTotal * precioKg).toFixed(2);
+            document.getElementById('resultado-costos').innerHTML = `
+                <p><strong>Costo total estimado:</strong> $${costoTotal}</p>
+            `;
+        }
+
+        function exportarDatos() {
+            const blob = new Blob([JSON.stringify(datos)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pollos-${new Date().toLocaleDateString()}.json`;
+            a.click();
+        }
+
+        function toggleModoNocturno() {
+            document.body.classList.toggle('modo-nocturno');
+            localStorage.setItem('modoNocturno', document.body.classList.contains('modo-nocturno'));
+        }
+
+        function mostrarSeccion(id) {
+            document.querySelectorAll('.seccion').forEach(seccion => {
+                seccion.classList.remove('seccion-activa');
+            });
+            document.getElementById(id).classList.add('seccion-activa');
+        }
+
+        // Inicialización
+        if (localStorage.getItem('modoNocturno') === 'true') {
+            document.body.classList.add('modo-nocturno');
+        }
+        
+        if (new Date().getHours() > 18 || new Date().getHours() < 6) {
+            document.body.classList.add('modo-nocturno');
+        }
+
+        actualizar();
     </script>
 </body>
 </html>

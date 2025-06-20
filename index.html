@@ -9,18 +9,56 @@
             font-family: Arial, sans-serif;
             background: #f5f7fa;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             color: #333;
         }
         .container {
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
+            padding: 15px; /* Padding para que el contenido no pegue a los bordes */
         }
         h1 {
             color: #4361ee;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
+
+        /* Estilos de Pestañas (Tabs) */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto; /* Para desplazamiento horizontal si hay muchas pestañas en móviles */
+            -webkit-overflow-scrolling: touch; /* Suaviza el desplazamiento en iOS */
+        }
+        .tab {
+            flex-shrink: 0; /* Evita que las pestañas se encojan */
+            padding: 10px 15px;
+            cursor: pointer;
+            background: #f0f7ff;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            text-align: center;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        .tab.active {
+            background: #4361ee;
+            color: white;
+            font-weight: bold;
+        }
+        .tab:hover:not(.active) {
+            background: #e0e7ee;
+        }
+
+        /* Contenido de Pestañas */
+        .tab-content {
+            display: none; /* Por defecto, todos los contenidos de pestañas están ocultos */
+        }
+        .tab-content.active {
+            display: block; /* Solo la pestaña activa se muestra */
+        }
+
+        /* Estilos de Tarjetas (Cards) */
         .card {
             background: white;
             border-radius: 12px;
@@ -29,53 +67,75 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        /* Estilos para Móviles */
-        @media (max-width: 600px) {
-            body {
-                padding-bottom: 70px;
-            }
-            #modo-movil {
-                display: flex;
-                justify-content: space-around;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: #4361ee;
-                padding: 10px 0;
-                z-index: 1000;
-            }
-            #modo-movil button {
-                background: none;
-                border: none;
-                color: white;
-                font-size: 20px;
-            }
-            .seccion {
-                display: none;
-            }
-            .seccion-activa {
-                display: block;
-            }
+        /* Métricas (en Resumen) */
+        .metricas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Adaptativo */
+            gap: 15px;
+            margin-bottom: 20px;
         }
-        
-        /* Estilos Mejorados */
-        .indicadores {
+        .metrica {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
             display: flex;
-            gap: 10px;
-            margin: 15px 0;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80px; /* Altura mínima para consistencia */
         }
-        .indicador {
-            flex: 1;
+        .metrica h3 {
+            margin: 0 0 5px 0;
+            font-size: 1em;
+        }
+        .metrica p {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        /* Colores de Métricas */
+        .vivos { background: linear-gradient(45deg, #4cc9f0, #4361ee); }
+        .muertos { background: linear-gradient(45deg, #f72585, #f8961e); }
+        .consumo { background: linear-gradient(45deg, #4CAF50, #8BC34A); }
+        .dias { background: linear-gradient(45deg, #7209b7, #3a0ca3); }
+        .temperatura { background: linear-gradient(45deg, #f8961e, #f3722c); }
+        .humedad { background: linear-gradient(45deg, #4895ef, #3f37c9); }
+
+        /* Estilos de Formularios e Inputs */
+        input {
+            width: 100%;
             padding: 12px;
             border-radius: 8px;
-            text-align: center;
-            background: #f0f7ff;
+            border: 1px solid #ddd;
+            margin: 8px 0;
+            font-size: 16px;
+            box-sizing: border-box; /* Incluye padding en el ancho total */
         }
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+            transition: opacity 0.2s ease;
+        }
+        .btn-iniciar { background: #4361ee; }
+        .btn-eliminar { background: #f72585; }
+        .btn-registrar { background: #4361ee; }
+        .btn-exportar { background: #6d4c41; }
+        button:hover { opacity: 0.9; }
+
+        /* Estilos de Tablas */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            font-size: 0.9em; /* Para tablas más compactas */
         }
         th, td {
             padding: 12px;
@@ -84,63 +144,48 @@
         }
         th {
             background: #f0f7ff;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            margin: 8px 0;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: #4361ee;
-            color: white;
             font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 16px;
         }
-        button:hover {
-            opacity: 0.9;
+        .fila-semana {
+            background: #f9f9f9;
         }
-        .notificacion {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px;
+
+        /* Historial de Mortalidad */
+        .historial-mortalidad {
+            max-height: 300px; /* Limita la altura y permite scroll */
+            overflow-y: auto;
+            border: 1px solid #eee;
             border-radius: 8px;
-            color: white;
-            animation: fadeIn 0.5s;
-            z-index: 1000;
         }
-        .exito {
-            background: #4CAF50;
+        .historial-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .alerta {
-            background: #FF9800;
+        .historial-item:last-child {
+            border-bottom: none; /* No borde en el último elemento */
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .historial-mortalidad p { /* Estilo para mensaje cuando no hay registros */
+            text-align: center;
+            color: #666;
+            padding: 20px;
         }
-        
-        /* Modo Nocturno */
-        .modo-nocturno {
-            background-color: #121212;
-            color: #e0e0e0;
+
+        /* Barra de Progreso */
+        .progress-bar {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
         }
-        .modo-nocturno .card {
-            background-color: #1e1e1e;
-        }
-        .modo-nocturno input,
-        .modo-nocturno table {
-            background-color: #2d2d2d;
-            color: white;
+        .progress {
+            height: 100%;
+            background: #4361ee;
+            width: 0%; /* Controlado por JS */
+            transition: width 0.5s ease-out; /* Animación para el progreso */
         }
     </style>
 </head>
@@ -148,311 +193,406 @@
     <div class="container">
         <h1>🐔 MANEJO DE POLLOS COB500</h1>
         
-        <!-- Panel de Navegación Móvil -->
-        <div id="modo-movil">
-            <button onclick="mostrarSeccion('resumen')">📊</button>
-            <button onclick="mostrarSeccion('registro')">✍️</button>
-            <button onclick="mostrarSeccion('proyeccion')">📈</button>
-            <button onclick="toggleModoNocturno()">🌙</button>
+        <div class="tabs">
+            <div class="tab active" onclick="mostrarTab('resumen')">Resumen</div>
+            <div class="tab" onclick="mostrarTab('mortalidad')">Mortalidad</div>
+            <div class="tab" onclick="mostrarTab('consumo')">Consumo</div>
         </div>
-        
-        <!-- Sección de Resumen -->
-        <div id="resumen" class="seccion seccion-activa">
-            <div class="card">
-                <div class="indicadores">
-                    <div class="indicador">
-                        <span>Pollos vivos</span>
-                        <strong id="vivos">0</strong>
-                    </div>
-                    <div class="indicador">
-                        <span>Pollos muertos</span>
-                        <strong id="muertos">0</strong>
-                    </div>
-                </div>
-                <div class="indicadores">
-                    <div class="indicador">
-                        <span>Días transcurridos</span>
-                        <strong id="dias-transcurridos">0</strong>
-                    </div>
-                    <div class="indicador">
-                        <span>Consumo hoy</span>
-                        <strong id="consumo">0 kg</strong>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h3>📅 Historial de Mortalidad</h3>
-                <table id="historial-mortalidad">
-                    <tr><th>Fecha</th><th>Cantidad</th></tr>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Sección de Registro -->
-        <div id="registro" class="seccion">
-            <div class="card">
+
+        <div id="resumen" class="tab-content active">
+            <div id="formulario-inicio" class="card">
                 <h3>Iniciar nueva crianza</h3>
-                <input type="number" id="pollos-iniciales" placeholder="Cantidad de pollos">
-                <button onclick="iniciarCrianza()">🟢 Iniciar</button>
+                <input type="number" id="pollos-iniciales" placeholder="Cantidad de pollos iniciales" min="1">
+                <input type="date" id="fecha-inicio">
+                <button class="btn-iniciar" onclick="iniciarCrianza()">🟢 Iniciar Crianza</button>
+            </div>
+
+            <div id="resumen-crianza" class="card" style="display: none;">
+                <h3>Resumen de Crianza</h3>
+                <div class="progress-bar">
+                    <div class="progress" id="progreso-crianza"></div>
+                </div>
+                
+                <div class="metricas">
+                    <div class="metrica vivos">
+                        <h3>Pollos vivos</h3>
+                        <p id="vivos">0</p>
+                    </div>
+                    <div class="metrica muertos">
+                        <h3>Pollos muertos</h3>
+                        <p id="muertos">0</p>
+                    </div>
+                    <div class="metrica dias">
+                        <h3>Días de vida</h3>
+                        <p id="dias-vida">0</p>
+                    </div>
+                    <div class="metrica consumo">
+                        <h3>Consumo hoy</h3>
+                        <p id="consumo-diario-actual">0 kg</p>
+                    </div>
+                    <div class="metrica temperatura">
+                        <h3>Temperatura ideal</h3>
+                        <p id="temperatura">0°C</p>
+                    </div>
+                    <div class="metrica humedad">
+                        <h3>Humedad ideal</h3>
+                        <p id="humedad">0%</p>
+                    </div>
+                </div>
+                
+                <button class="btn-eliminar" onclick="eliminarCrianza()">❌ Eliminar crianza actual</button>
+            </div>
+        </div>
+
+        <div id="mortalidad" class="tab-content">
+            <div class="card">
+                <h3>Registrar mortalidad</h3>
+                <input type="number" id="muertos-hoy" placeholder="Pollos muertos hoy" min="1">
+                <button class="btn-registrar" onclick="registrarMuertos()">✍️ Registrar</button>
             </div>
 
             <div class="card">
-                <h3>Registrar mortalidad</h3>
-                <input type="number" id="muertos-hoy" placeholder="Pollos muertos hoy">
-                <button onclick="registrarMuertos()">✍️ Registrar</button>
-            </div>
-            
-            <div class="card">
-                <h3>💵 Calculadora de Costos</h3>
-                <input type="number" id="precio-alimento" placeholder="Precio por kg ($)">
-                <button onclick="calcularCostos()">Calcular</button>
-                <div id="resultado-costos" style="margin-top: 10px;"></div>
+                <h3>Historial de mortalidad</h3>
+                <div class="historial-mortalidad" id="historial-mortalidad">
+                    <p>No hay registros de mortalidad</p>
+                </div>
             </div>
         </div>
-        
-        <!-- Sección de Proyección -->
-        <div id="proyeccion" class="seccion">
+
+        <div id="consumo" class="tab-content">
             <div class="card">
-                <h3>Proyección de consumo</h3>
-                <table>
+                <h3>Proyección de consumo total (42 días)</h3>
+                <table id="tabla-consumo">
                     <thead>
                         <tr>
                             <th>Fase</th>
                             <th>Consumo semanal</th>
-                            <th>Total</th>
+                            <th>Total Fase</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td rowspan="3">Inicio</td>
+                        <tr class="fila-semana">
+                            <td rowspan="3">Inicio<br>(Sem 1-3)</td>
                             <td id="semana1">0 kg</td>
-                            <td rowspan="3" id="total-inicio">0 kg</td>
+                            <td rowspan="3" id="total-fase-inicio">0 kg</td>
                         </tr>
-                        <tr>
+                        <tr class="fila-semana">
                             <td id="semana2">0 kg</td>
                         </tr>
-                        <tr>
+                        <tr class="fila-semana">
                             <td id="semana3">0 kg</td>
                         </tr>
                         <tr>
-                            <td rowspan="2">Crecimiento</td>
+                            <td rowspan="2">Crecimiento<br>(Sem 4-5)</td>
                             <td id="semana4">0 kg</td>
-                            <td rowspan="2" id="total-crecimiento">0 kg</td>
+                            <td rowspan="2" id="total-fase-crecimiento">0 kg</td>
                         </tr>
                         <tr>
                             <td id="semana5">0 kg</td>
                         </tr>
                         <tr>
-                            <td>Engorde</td>
+                            <td>Engorde<br>(Sem 6)</td>
                             <td id="semana6">0 kg</td>
-                            <td id="total-engorde">0 kg</td>
+                            <td id="total-fase-engorde">0 kg</td>
                         </tr>
                         <tr style="font-weight: bold; background: #f0f7ff;">
-                            <td colspan="2">Total 42 días</td>
-                            <td id="consumo-total">0 kg</td>
+                            <td colspan="2">Consumo Total Estimado (42 días)</td>
+                            <td id="consumo-total-general">0 kg</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            
             <div class="card">
-                <h3>🌤️ Clima Recomendado</h3>
-                <div id="clima-recomendado">
-                    <p>Temperatura ideal: 24-28°C</p>
-                    <p>Humedad: 50-70%</p>
-                </div>
+                <h3>Herramientas Adicionales</h3>
+                 <input type="number" id="precio-alimento" placeholder="Precio del alimento por kg ($)" min="0" step="0.01">
+                <button onclick="calcularCostos()">💵 Calcular Costo Proyectado</button>
+                <div id="resultado-costos" style="margin-top: 15px; font-weight: bold;"></div>
             </div>
-            
-            <button onclick="exportarDatos()" style="background: #6d4c41;">📤 Exportar Datos</button>
+
+            <button class="btn-exportar" onclick="exportarDatos()">📤 Exportar Datos</button>
         </div>
     </div>
 
     <script>
-        // Datos persistentes
-        let datos = JSON.parse(localStorage.getItem('pollos')) || {
+        // 1. DATOS PERSISTENTES (LocalStorage)
+        let datos = JSON.parse(localStorage.getItem('pollosApp')) || {
             pollosIniciales: 0,
             pollosMuertos: 0,
             fechaInicio: null,
-            historialMuertos: []
+            historialMortalidad: []
         };
 
-        // Factores de consumo (gramos/pollo/día)
-        const consumoDiario = {
-            0: 20.30,  // Semana 1 (0-6 días)
-            1: 46.90,  // Semana 2 (7-13 días)
-            2: 90.00,  // Semana 3 (14-20 días)
-            3: 142.10, // Semana 4 (21-27 días)
-            4: 183.70, // Semana 5 (28-34 días)
-            5: 206.60  // Semana 6 (35-41 días)
-        };
+        // 2. CONSTANTES DE CONSUMO, TEMPERATURA Y HUMEDAD (Valores por semana/fase)
+        // Valores de consumo diario promedio por pollo, en GRAMOS.
+        const consumoDiarioPorSemana = [
+            20.30,  // Semana 1 (Días 0-6)
+            46.90,  // Semana 2 (Días 7-13)
+            90.00,  // Semana 3 (Días 14-20)
+            142.10, // Semana 4 (Días 21-27)
+            183.70, // Semana 5 (Días 28-34)
+            206.60  // Semana 6 (Días 35-41)
+        ];
+        
+        // Temperaturas y humedades ideales por semana/fase
+        const temperaturaIdealPorSemana = [
+            32.5, 31.0, 29.5, 27.5, 25.5, 23.5 // Semanas 1 a 6
+        ];
+        const humedadIdealPorSemana = [
+            65, 65, 60, 60, 55, 55 // Semanas 1 a 6
+        ];
 
-        // Funciones principales
+        // 3. FUNCIÓN PARA GUARDAR DATOS EN LOCALSTORAGE
+        function guardarDatos() {
+            localStorage.setItem('pollosApp', JSON.stringify(datos));
+        }
+
+        // 4. FUNCIONES PRINCIPALES DE ACTUALIZACIÓN DE UI
         function actualizar() {
-            const pollosVivos = datos.pollosIniciales - datos.pollosMuertos;
-            const dias = calcularDias();
+            const tieneCrianzaIniciada = datos.fechaInicio !== null && datos.pollosIniciales > 0;
             
-            // Actualizar valores principales
-            document.getElementById('vivos').textContent = pollosVivos;
+            // Alternar visibilidad del formulario de inicio vs resumen
+            document.getElementById('formulario-inicio').style.display = tieneCrianzaIniciada ? 'none' : 'block';
+            document.getElementById('resumen-crianza').style.display = tieneCrianzaIniciada ? 'block' : 'none';
+            
+            if (!tieneCrianzaIniciada) {
+                // Si no hay crianza, la fecha de inicio se establece en hoy para el input
+                document.getElementById('fecha-inicio').valueAsDate = new Date();
+                // La proyección de consumo debe mostrar 0s si no hay crianza
+                actualizarProyeccionConsumo(); 
+                return; // No hay más que actualizar si no hay crianza
+            }
+            
+            const hoy = new Date();
+            const fechaInicioCrianza = new Date(datos.fechaInicio);
+            const diasTranscurridos = Math.floor((hoy - fechaInicioCrianza) / (1000 * 60 * 60 * 24));
+            
+            // Calcular la semana actual (0-indexado) para las métricas del día
+            // Aseguramos que el índice no exceda el tamaño de los arrays de constantes
+            const semanaActual = Math.min(Math.floor(diasTranscurridos / 7), consumoDiarioPorSemana.length - 1); 
+            const pollosVivosActuales = datos.pollosIniciales - datos.pollosMuertos;
+            
+            // Actualizar métricas en la pestaña de resumen
+            document.getElementById('vivos').textContent = pollosVivosActuales;
             document.getElementById('muertos').textContent = datos.pollosMuertos;
-            document.getElementById('dias-transcurridos').textContent = dias;
+            document.getElementById('dias-vida').textContent = diasTranscurridos;
             
-            // Calcular consumo diario
-            const semanaActual = Math.min(Math.floor(dias / 7), 5);
-            const consumoHoy = (pollosVivos * consumoDiario[semanaActual]) / 1000;
-            document.getElementById('consumo').textContent = consumoHoy.toFixed(2) + ' kg';
+            // Consumo diario estimado para HOY (basado en pollos vivos actuales)
+            const consumoHoyKg = (pollosVivosActuales * consumoDiarioPorSemana[semanaActual]) / 1000;
+            document.getElementById('consumo-diario-actual').textContent = consumoHoyKg.toFixed(2) + ' kg';
             
-            // Actualizar proyección
-            actualizarProyeccion();
+            document.getElementById('temperatura').textContent = temperaturaIdealPorSemana[semanaActual] + '°C';
+            document.getElementById('humedad').textContent = humedadIdealPorSemana[semanaActual] + '%';
             
-            // Actualizar historial
-            actualizarHistorial();
+            // Calcular y actualizar la barra de progreso (crianza de 42 días)
+            const progresoPorcentaje = Math.min((diasTranscurridos / 42) * 100, 100);
+            document.getElementById('progreso-crianza').style.width = `${progresoPorcentaje}%`;
             
-            // Verificar alertas
-            verificarAlertas();
+            // **IMPORTANTE:** Siempre actualizar la proyección de consumo y el historial de mortalidad
+            // para que los datos sean consistentes en todas las pestañas.
+            actualizarProyeccionConsumo();
+            actualizarHistorialMortalidad();
         }
 
-        function calcularDias() {
-            if (!datos.fechaInicio) return 0;
-            const unDia = 24 * 60 * 60 * 1000;
-            return Math.floor((new Date() - new Date(datos.fechaInicio)) / unDia);
+        // 5. FUNCIÓN ESPECÍFICA PARA LA PROYECCIÓN DE CONSUMO
+        function actualizarProyeccionConsumo() {
+            // La proyección se basa en la cantidad inicial de pollos para los 42 días,
+            // no en los pollos vivos actuales, ya que es una ESTIMACIÓN TOTAL.
+            const pollosParaProyeccion = datos.pollosIniciales || 0; 
+            
+            // Calcular consumo semanal en KG
+            const semana1Kg = (pollosParaProyeccion * consumoDiarioPorSemana[0] * 7) / 1000;
+            const semana2Kg = (pollosParaProyeccion * consumoDiarioPorSemana[1] * 7) / 1000;
+            const semana3Kg = (pollosParaProyeccion * consumoDiarioPorSemana[2] * 7) / 1000;
+            const semana4Kg = (pollosParaProyeccion * consumoDiarioPorSemana[3] * 7) / 1000;
+            const semana5Kg = (pollosParaProyeccion * consumoDiarioPorSemana[4] * 7) / 1000;
+            const semana6Kg = (pollosParaProyeccion * consumoDiarioPorSemana[5] * 7) / 1000;
+            
+            // Actualizar celdas de consumo semanal
+            document.getElementById('semana1').textContent = semana1Kg.toFixed(2) + ' kg';
+            document.getElementById('semana2').textContent = semana2Kg.toFixed(2) + ' kg';
+            document.getElementById('semana3').textContent = semana3Kg.toFixed(2) + ' kg';
+            document.getElementById('semana4').textContent = semana4Kg.toFixed(2) + ' kg';
+            document.getElementById('semana5').textContent = semana5Kg.toFixed(2) + ' kg';
+            document.getElementById('semana6').textContent = semana6Kg.toFixed(2) + ' kg';
+            
+            // Calcular y actualizar totales por fase
+            const totalFaseInicio = semana1Kg + semana2Kg + semana3Kg;
+            const totalFaseCrecimiento = semana4Kg + semana5Kg;
+            const totalFaseEngorde = semana6Kg;
+            const consumoTotalGeneral = totalFaseInicio + totalFaseCrecimiento + totalFaseEngorde;
+            
+            document.getElementById('total-fase-inicio').textContent = totalFaseInicio.toFixed(2) + ' kg';
+            document.getElementById('total-fase-crecimiento').textContent = totalFaseCrecimiento.toFixed(2) + ' kg';
+            document.getElementById('total-fase-engorde').textContent = totalFaseEngorde.toFixed(2) + ' kg';
+            document.getElementById('consumo-total-general').textContent = consumoTotalGeneral.toFixed(2) + ' kg';
+            
+            console.log("Proyección de consumo actualizada.");
         }
 
-        function actualizarProyeccion() {
-            const semana1 = (datos.pollosIniciales * consumoDiario[0] * 7) / 1000;
-            const semana2 = (datos.pollosIniciales * consumoDiario[1] * 7) / 1000;
-            const semana3 = (datos.pollosIniciales * consumoDiario[2] * 7) / 1000;
-            const semana4 = (datos.pollosIniciales * consumoDiario[3] * 7) / 1000;
-            const semana5 = (datos.pollosIniciales * consumoDiario[4] * 7) / 1000;
-            const semana6 = (datos.pollosIniciales * consumoDiario[5] * 7) / 1000;
+        // 6. FUNCIÓN ESPECÍFICA PARA EL HISTORIAL DE MORTALIDAD
+        function actualizarHistorialMortalidad() {
+            const historialDiv = document.getElementById('historial-mortalidad');
             
-            document.getElementById('semana1').textContent = semana1.toFixed(2) + ' kg';
-            document.getElementById('semana2').textContent = semana2.toFixed(2) + ' kg';
-            document.getElementById('semana3').textContent = semana3.toFixed(2) + ' kg';
-            document.getElementById('semana4').textContent = semana4.toFixed(2) + ' kg';
-            document.getElementById('semana5').textContent = semana5.toFixed(2) + ' kg';
-            document.getElementById('semana6').textContent = semana6.toFixed(2) + ' kg';
-            
-            const totalInicio = semana1 + semana2 + semana3;
-            const totalCrecimiento = semana4 + semana5;
-            const totalEngorde = semana6;
-            const totalGeneral = totalInicio + totalCrecimiento + totalEngorde;
-            
-            document.getElementById('total-inicio').textContent = totalInicio.toFixed(2) + ' kg';
-            document.getElementById('total-crecimiento').textContent = totalCrecimiento.toFixed(2) + ' kg';
-            document.getElementById('total-engorde').textContent = totalEngorde.toFixed(2) + ' kg';
-            document.getElementById('consumo-total').textContent = totalGeneral.toFixed(2) + ' kg';
+            if (datos.historialMortalidad.length === 0) {
+                historialDiv.innerHTML = '<p>No hay registros de mortalidad</p>';
+                return;
+            }
+
+            // Ordenar por fecha, el más reciente primero
+            const historialOrdenado = datos.historialMortalidad
+                .slice() // Crear una copia para no mutar el array original
+                .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            historialDiv.innerHTML = historialOrdenado.map(item => `
+                <div class="historial-item">
+                    <span>${new Date(item.fecha).toLocaleDateString()}</span>
+                    <span>${item.cantidad} pollos</span>
+                </div>
+            `).join('');
         }
 
-        function actualizarHistorial() {
-            const tabla = document.getElementById('historial-mortalidad');
-            // Mantener el encabezado
-            tabla.innerHTML = '<tr><th>Fecha</th><th>Cantidad</th></tr>';
-            
-            // Agregar registros
-            datos.historialMuertos.forEach(registro => {
-                const nuevaFila = `<tr><td>${registro.fecha}</td><td>${registro.cantidad}</td></tr>`;
-                tabla.innerHTML += nuevaFila;
+        // 7. FUNCIONES DE INTERACCIÓN DEL USUARIO
+        function mostrarTab(tabId) {
+            // Ocultar todos los contenidos de las pestañas
+            document.querySelectorAll('.tab-content').forEach(tabContent => {
+                tabContent.classList.remove('active');
             });
+            // Remover la clase 'active' de todas las pestañas de navegación
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar la pestaña de contenido seleccionada
+            document.getElementById(tabId).classList.add('active');
+            // Activar visualmente la pestaña clicada
+            document.querySelector(`.tab[onclick="mostrarTab('${tabId}')"]`).classList.add('active');
+            
+            // Si la pestaña de consumo se activa, asegurar que la proyección esté actualizada.
+            if(tabId === 'consumo') {
+                actualizarProyeccionConsumo();
+            }
         }
 
-        // Funciones de interacción
         function iniciarCrianza() {
             const cantidad = parseInt(document.getElementById('pollos-iniciales').value);
-            if (cantidad > 0) {
-                datos.pollosIniciales = cantidad;
-                datos.pollosMuertos = 0;
-                datos.fechaInicio = new Date().toISOString();
-                datos.historialMuertos = [];
-                guardarDatos();
-                actualizar();
-                mostrarNotificacion('¡Crianza iniciada con ' + cantidad + ' pollos!', 'exito');
-                document.getElementById('pollos-iniciales').value = '';
+            const fecha = document.getElementById('fecha-inicio').value;
+            
+            if (isNaN(cantidad) || cantidad <= 0 || !fecha) {
+                alert('Por favor, ingrese una cantidad de pollos válida y una fecha de inicio.');
+                return;
             }
+
+            datos = {
+                pollosIniciales: cantidad,
+                pollosMuertos: 0,
+                fechaInicio: fecha,
+                historialMortalidad: []
+            };
+            guardarDatos();
+            actualizar(); // Refresca toda la UI y la proyección
+            alert(`¡Crianza iniciada con ${cantidad} pollos!`);
+            // Limpiar campos y volver al resumen
+            document.getElementById('pollos-iniciales').value = '';
+            document.getElementById('fecha-inicio').valueAsDate = new Date(); // Resetear a fecha actual
+            mostrarTab('resumen'); 
         }
 
         function registrarMuertos() {
-            const muertos = parseInt(document.getElementById('muertos-hoy').value) || 0;
-            if (muertos > 0) {
-                datos.pollosMuertos += muertos;
-                datos.historialMuertos.push({
-                    fecha: new Date().toLocaleDateString(),
-                    cantidad: muertos
-                });
-                guardarDatos();
-                actualizar();
-                mostrarNotificacion('Registrados ' + muertos + ' pollos muertos', 'exito');
-                document.getElementById('muertos-hoy').value = '';
+            const muertosInput = document.getElementById('muertos-hoy');
+            const muertos = parseInt(muertosInput.value);
+            const pollosVivosActuales = datos.pollosIniciales - datos.pollosMuertos;
+
+            if (isNaN(muertos) || muertos <= 0) {
+                alert('Por favor, ingrese un número válido de pollos muertos.');
+                return;
             }
+
+            if (pollosVivosActuales < muertos) {
+                 alert(`No puedes registrar ${muertos} muertes. Solo quedan ${pollosVivosActuales} pollos vivos.`);
+                 return;
+            }
+            if (datos.pollosIniciales === 0) {
+                 alert('Debe iniciar una crianza antes de registrar muertes.');
+                 return;
+            }
+
+            datos.pollosMuertos += muertos;
+            datos.historialMortalidad.push({
+                fecha: new Date().toISOString(), // Usar ISO string para fácil parseo posterior
+                cantidad: muertos
+            });
+            guardarDatos();
+            actualizar(); // Refresca toda la UI y la proyección
+            muertosInput.value = ''; // Limpiar el campo
+            alert(`Registrados ${muertos} pollos muertos.`); // Confirmación
         }
 
-        function guardarDatos() {
-            localStorage.setItem('pollos', JSON.stringify(datos));
-        }
-
-        // Funciones de las mejoras
-        function mostrarNotificacion(mensaje, tipo = "exito") {
-            const notificacion = document.createElement("div");
-            notificacion.className = `notificacion ${tipo}`;
-            notificacion.innerHTML = mensaje;
-            document.body.appendChild(notificacion);
-            
-            setTimeout(() => {
-                notificacion.remove();
-            }, 3000);
-        }
-
-        function verificarAlertas() {
-            if (datos.pollosIniciales === 0) return;
-            
-            const tasaMortalidad = (datos.pollosMuertos / datos.pollosIniciales) * 100;
-            if (tasaMortalidad > 5) {
-                mostrarNotificacion(`⚠️ Alta mortalidad: ${tasaMortalidad.toFixed(1)}%`, "alerta");
+        function eliminarCrianza() {
+            if (confirm('¿Estás seguro de eliminar la crianza actual? Esta acción no se puede deshacer.')) {
+                datos = { pollosIniciales: 0, pollosMuertos: 0, fechaInicio: null, historialMortalidad: [] };
+                guardarDatos();
+                actualizar(); // Refresca toda la UI y la proyección
+                alert('Crianza eliminada.');
+                mostrarTab('resumen'); // Vuelve a la pestaña de resumen después de eliminar
             }
         }
 
         function calcularCostos() {
             const precioKg = parseFloat(document.getElementById('precio-alimento').value);
-            if (isNaN(precioKg)) return;
+            if (isNaN(precioKg) || precioKg < 0) {
+                document.getElementById('resultado-costos').innerHTML = 'Por favor, ingrese un precio válido.';
+                return;
+            }
             
-            const consumoTotal = parseFloat(document.getElementById('consumo-total').textContent);
-            const costoTotal = (consumoTotal * precioKg).toFixed(2);
+            const consumoTotalElement = document.getElementById('consumo-total-general');
+            if (!consumoTotalElement) {
+                document.getElementById('resultado-costos').innerHTML = 'Error: No se encontró el total de consumo.';
+                return;
+            }
+            const consumoTotalKg = parseFloat(consumoTotalElement.textContent); // Obtener el valor ya calculado
+            
+            if (isNaN(consumoTotalKg)) {
+                 document.getElementById('resultado-costos').innerHTML = 'Error: Consumo total no válido.';
+                return;
+            }
+
+            const costoTotal = (consumoTotalKg * precioKg).toFixed(2);
             document.getElementById('resultado-costos').innerHTML = `
                 <p><strong>Costo total estimado:</strong> $${costoTotal}</p>
             `;
         }
 
         function exportarDatos() {
-            const blob = new Blob([JSON.stringify(datos)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `pollos-${new Date().toLocaleDateString()}.json`;
-            a.click();
+            // Verificar si hay datos para exportar
+            if (datos.pollosIniciales === 0 && datos.historialMortalidad.length === 0) {
+                alert("No hay datos de crianza para exportar.");
+                return;
+            }
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datos, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", `pollos_cob500_datos_${new Date().toLocaleDateString('es-PE')}.json`);
+            document.body.appendChild(downloadAnchorNode); // Required for Firefox
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            alert('Datos exportados con éxito.');
         }
 
-        function toggleModoNocturno() {
-            document.body.classList.toggle('modo-nocturno');
-            localStorage.setItem('modoNocturno', document.body.classList.contains('modo-nocturno'));
-        }
-
-        function mostrarSeccion(id) {
-            document.querySelectorAll('.seccion').forEach(seccion => {
-                seccion.classList.remove('seccion-activa');
-            });
-            document.getElementById(id).classList.add('seccion-activa');
-        }
-
-        // Inicialización
-        if (localStorage.getItem('modoNocturno') === 'true') {
-            document.body.classList.add('modo-nocturno');
-        }
-        
-        if (new Date().getHours() > 18 || new Date().getHours() < 6) {
-            document.body.classList.add('modo-nocturno');
-        }
-
-        actualizar();
+        // 8. INICIALIZACIÓN DE LA APLICACIÓN
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer fecha actual en el campo de fecha de inicio por defecto
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            document.getElementById('fecha-inicio').value = dateStr;
+            
+            // Mostrar la primera pestaña (Resumen) al cargar la página
+            mostrarTab('resumen'); 
+            
+            // Realizar la actualización inicial de todos los datos y la interfaz
+            // Esto cargará los datos guardados y mostrará el estado correcto de la crianza.
+            actualizar(); 
+        });
     </script>
 </body>
 </html>

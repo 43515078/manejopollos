@@ -150,7 +150,6 @@
             <div class="tab" onclick="mostrarTab('consumo')">Consumo</div>
         </div>
 
-        <!-- Pestaña de Resumen -->
         <div id="resumen" class="tab-content active">
             <div id="formulario-inicio" class="card">
                 <h3>Iniciar nueva crianza</h3>
@@ -196,7 +195,6 @@
             </div>
         </div>
 
-        <!-- Pestaña de Mortalidad -->
         <div id="mortalidad" class="tab-content">
             <div class="card">
                 <h3>Registrar mortalidad</h3>
@@ -212,43 +210,39 @@
             </div>
         </div>
 
-        <!-- Pestaña de Consumo - VERSIÓN FUNCIONAL -->
         <div id="consumo" class="tab-content">
             <div class="card">
                 <h3>Proyección de consumo</h3>
                 <table id="tabla-consumo">
                     <thead>
                         <tr>
-                            <th>Semana</th>
-                            <th>Consumo semanal (kg)</th>
-                            <th>Total fase (kg)</th>
+                            <th>Fase</th>
+                            <th>Consumo semanal</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="fila-semana">
-                            <td>Semana 1</td>
+                            <td rowspan="3">Inicio</td>
                             <td id="semana1">0 kg</td>
                             <td rowspan="3" id="total-inicio">0 kg</td>
                         </tr>
                         <tr class="fila-semana">
-                            <td>Semana 2</td>
                             <td id="semana2">0 kg</td>
                         </tr>
                         <tr class="fila-semana">
-                            <td>Semana 3</td>
                             <td id="semana3">0 kg</td>
                         </tr>
                         <tr>
-                            <td>Semana 4</td>
+                            <td rowspan="2">Crecimiento</td>
                             <td id="semana4">0 kg</td>
                             <td rowspan="2" id="total-crecimiento">0 kg</td>
                         </tr>
                         <tr>
-                            <td>Semana 5</td>
                             <td id="semana5">0 kg</td>
                         </tr>
                         <tr>
-                            <td>Semana 6</td>
+                            <td>Engorde</td>
                             <td id="semana6">0 kg</td>
                             <td id="total-engorde">0 kg</td>
                         </tr>
@@ -271,24 +265,28 @@
             historialMortalidad: []
         };
 
-        // 2. CONSTANTES DE CONSUMO (gramos por pollo por día)
+        // 2. CONSTANTES DE CONSUMO
+        // Estos valores de consumo diario son en gramos por pollo
         const consumoDiario = [20.30, 46.90, 90.00, 142.10, 183.70, 206.60];
         const temperaturaIdeal = [32.5, 31.0, 29.5, 27.5, 25.5, 23.5];
         const humedadIdeal = [65, 65, 60, 60, 55, 55];
 
-        // 3. FUNCIÓN PARA ACTUALIZAR PROYECCIÓN DE CONSUMO (CORREGIDA)
+        // 3. FUNCIÓN GARANTIZADA PARA PROYECCIÓN DE CONSUMO
         function actualizarProyeccionConsumo() {
-            const pollos = datos.pollosIniciales || 0;
+            const pollosActuales = (datos.fechaInicio !== null) ? (datos.pollosIniciales - datos.pollosMuertos) : 0;
+            // Si no hay crianza iniciada o los pollos iniciales son 0, la proyección es 0
+            const pollosParaProyeccion = datos.pollosIniciales || 0; 
             
-            // Calcular consumo para cada semana (convertir gramos a kg)
-            const semana1 = (pollos * consumoDiario[0] * 7) / 1000;
-            const semana2 = (pollos * consumoDiario[1] * 7) / 1000;
-            const semana3 = (pollos * consumoDiario[2] * 7) / 1000;
-            const semana4 = (pollos * consumoDiario[3] * 7) / 1000;
-            const semana5 = (pollos * consumoDiario[4] * 7) / 1000;
-            const semana6 = (pollos * consumoDiario[5] * 7) / 1000;
+            // Calcular consumo para cada semana
+            // Convertir gramos a kilogramos (dividir por 1000)
+            const semana1 = (pollosParaProyeccion * consumoDiario[0] * 7) / 1000;
+            const semana2 = (pollosParaProyeccion * consumoDiario[1] * 7) / 1000;
+            const semana3 = (pollosParaProyeccion * consumoDiario[2] * 7) / 1000;
+            const semana4 = (pollosParaProyeccion * consumoDiario[3] * 7) / 1000;
+            const semana5 = (pollosParaProyeccion * consumoDiario[4] * 7) / 1000;
+            const semana6 = (pollosParaProyeccion * consumoDiario[5] * 7) / 1000;
             
-            // Actualizar valores en la tabla
+            // Actualizar tabla
             document.getElementById('semana1').textContent = semana1.toFixed(2) + ' kg';
             document.getElementById('semana2').textContent = semana2.toFixed(2) + ' kg';
             document.getElementById('semana3').textContent = semana3.toFixed(2) + ' kg';
@@ -296,7 +294,7 @@
             document.getElementById('semana5').textContent = semana5.toFixed(2) + ' kg';
             document.getElementById('semana6').textContent = semana6.toFixed(2) + ' kg';
             
-            // Calcular totales por fase
+            // Calcular totales
             const totalInicio = semana1 + semana2 + semana3;
             const totalCrecimiento = semana4 + semana5;
             const totalEngorde = semana6;
@@ -307,72 +305,60 @@
             document.getElementById('total-crecimiento').textContent = totalCrecimiento.toFixed(2) + ' kg';
             document.getElementById('total-engorde').textContent = totalEngorde.toFixed(2) + ' kg';
             document.getElementById('consumo-total').textContent = totalGeneral.toFixed(2) + ' kg';
+            
+            console.log("Proyección de consumo actualizada correctamente.");
         }
 
-        // 4. FUNCIÓN PARA RESETEAR TABLA DE CONSUMO
-        function resetearTablaConsumo() {
-            for(let i = 1; i <= 6; i++) {
-                document.getElementById(`semana${i}`).textContent = '0 kg';
-            }
-            document.getElementById('total-inicio').textContent = '0 kg';
-            document.getElementById('total-crecimiento').textContent = '0 kg';
-            document.getElementById('total-engorde').textContent = '0 kg';
-            document.getElementById('consumo-total').textContent = '0 kg';
-        }
-
-        // 5. FUNCIONES PRINCIPALES
+        // 4. FUNCIONES PRINCIPALES
         function mostrarTab(tabId) {
-            // Ocultar todos los contenidos
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             
-            // Desactivar todas las pestañas
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Activar la pestaña seleccionada
             document.getElementById(tabId).classList.add('active');
             document.querySelector(`.tab[onclick="mostrarTab('${tabId}')"]`).classList.add('active');
             
-            // Actualizar datos si es la pestaña de consumo
+            // Si la pestaña de consumo se activa, asegurar que la proyección esté actualizada.
             if(tabId === 'consumo') {
                 actualizarProyeccionConsumo();
             }
         }
 
         function actualizar() {
-            const tieneCrianza = datos.fechaInicio !== null;
+            const tieneCrianza = datos.fechaInicio !== null && datos.pollosIniciales > 0;
             
-            // Mostrar/ocultar secciones según si hay crianza
             document.getElementById('formulario-inicio').style.display = tieneCrianza ? 'none' : 'block';
             document.getElementById('resumen-crianza').style.display = tieneCrianza ? 'block' : 'none';
             
             if (!tieneCrianza) {
                 document.getElementById('fecha-inicio').valueAsDate = new Date();
-                resetearTablaConsumo();
+                // Si no hay crianza, aún queremos que la tabla de consumo se muestre con 0s
+                actualizarProyeccionConsumo(); 
                 return;
             }
             
-            // Calcular días transcurridos
-            const dias = Math.floor((new Date() - new Date(datos.fechaInicio)) / (1000 * 60 * 60 * 24);
-            const semana = Math.min(Math.floor(dias / 7), 5);
+            const hoy = new Date();
+            const fechaInicioCrianza = new Date(datos.fechaInicio);
+            const dias = Math.floor((hoy - fechaInicioCrianza) / (1000 * 60 * 60 * 24));
+            
+            // La semana se calcula en base a los días de vida (0-6 días es semana 0, 7-13 días es semana 1, etc.)
+            // Aseguramos que el índice no exceda el tamaño del array de consumoDiario.
+            const semanaActual = Math.min(Math.floor(dias / 7), consumoDiario.length - 1); 
             const vivos = datos.pollosIniciales - datos.pollosMuertos;
             
             // Actualizar métricas
             document.getElementById('vivos').textContent = vivos;
             document.getElementById('muertos').textContent = datos.pollosMuertos;
             document.getElementById('dias-vida').textContent = dias;
-            document.getElementById('consumo').textContent = (vivos * consumoDiario[semana] / 1000).toFixed(2) + ' kg';
-            document.getElementById('temperatura').textContent = temperaturaIdeal[semana] + '°C';
-            document.getElementById('humedad').textContent = humedadIdeal[semana] + '%';
+            // Consumo diario basado en los pollos vivos actuales y la semana actual
+            document.getElementById('consumo').textContent = (vivos * consumoDiario[semanaActual] / 1000).toFixed(2) + ' kg';
+            document.getElementById('temperatura').textContent = temperaturaIdeal[semanaActual] + '°C';
+            document.getElementById('humedad').textContent = humedadIdeal[semanaActual] + '%';
             document.getElementById('progreso-crianza').style.width = `${Math.min((dias / 42) * 100, 100)}%`;
             
-            // Actualizar proyección de consumo
+            // Siempre actualizar la proyección de consumo cuando se actualiza la interfaz general
             actualizarProyeccionConsumo();
             
-            // Actualizar historial de mortalidad
+            // Actualizar historial
             const historial = document.getElementById('historial-mortalidad');
             historial.innerHTML = datos.historialMortalidad.length ? 
                 datos.historialMortalidad
@@ -384,7 +370,7 @@
                 '<p style="text-align: center; color: #666;">No hay registros de mortalidad</p>';
         }
 
-        // 6. FUNCIONES DE INTERACCIÓN
+        // 5. FUNCIONES DE INTERACCIÓN
         function iniciarCrianza() {
             const cantidad = parseInt(document.getElementById('pollos-iniciales').value);
             const fecha = document.getElementById('fecha-inicio').value;
@@ -397,7 +383,7 @@
                     historialMortalidad: []
                 };
                 localStorage.setItem('pollos', JSON.stringify(datos));
-                actualizar();
+                actualizar(); // Llama a actualizar para refrescar la UI y la proyección
                 alert(`¡Crianza iniciada con ${cantidad} pollos!`);
             } else {
                 alert('Por favor complete todos los campos correctamente');
@@ -406,36 +392,38 @@
 
         function registrarMuertos() {
             const muertos = parseInt(document.getElementById('muertos-hoy').value) || 0;
-            if (muertos > 0) {
+            if (muertos > 0 && datos.pollosIniciales - datos.pollosMuertos >= muertos) { // Validar que no mueran más de los vivos
                 datos.pollosMuertos += muertos;
                 datos.historialMortalidad.push({
                     fecha: new Date().toISOString(),
                     cantidad: muertos
                 });
                 localStorage.setItem('pollos', JSON.stringify(datos));
-                actualizar();
+                actualizar(); // Llama a actualizar para refrescar la UI y la proyección
                 document.getElementById('muertos-hoy').value = '';
+            } else if (muertos > 0) {
+                 alert('No puedes registrar más muertes de los pollos vivos actuales.');
             }
         }
 
         function eliminarCrianza() {
-            if (confirm('¿Estás seguro de eliminar la crianza actual?')) {
+            if (confirm('¿Estás seguro de eliminar la crianza actual? Esta acción no se puede deshacer.')) {
                 datos = { pollosIniciales: 0, pollosMuertos: 0, fechaInicio: null, historialMortalidad: [] };
                 localStorage.setItem('pollos', JSON.stringify(datos));
-                actualizar();
+                actualizar(); // Llama a actualizar para refrescar la UI y la proyección
             }
         }
 
-        // 7. INICIALIZACIÓN
+        // 6. INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', function() {
-            // Establecer fecha actual por defecto
-            document.getElementById('fecha-inicio').valueAsDate = new Date();
+            // Establecer fecha actual en el campo de fecha de inicio
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            document.getElementById('fecha-inicio').value = dateStr;
             
-            // Mostrar pestaña de resumen inicialmente
+            // Mostrar pestaña de resumen y realizar la actualización inicial
             mostrarTab('resumen');
-            
-            // Cargar y mostrar datos
-            actualizar();
+            actualizar(); // Asegura que todo el estado inicial se cargue correctamente
         });
     </script>
 </body>

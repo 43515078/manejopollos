@@ -4,7 +4,6 @@
     <title>🐔 Pollos COB500</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Estilos anteriores se mantienen igual */
         body {
             font-family: Arial, sans-serif;
             background: #f5f7fa;
@@ -155,10 +154,10 @@
 
         <!-- Pestaña de Resumen -->
         <div id="resumen" class="tab-content active">
-            <div id="formulario-inicio" class="card" style="display: none;">
+            <div id="formulario-inicio" class="card">
                 <h3>Iniciar nueva crianza</h3>
                 <input type="number" id="pollos-iniciales" placeholder="Cantidad de pollos">
-                <input type="date" id="fecha-inicio" placeholder="Fecha de nacimiento">
+                <input type="date" id="fecha-inicio">
                 <button class="btn-iniciar" onclick="iniciarCrianza()">🟢 Iniciar Crianza</button>
             </div>
 
@@ -214,7 +213,7 @@
             <div class="card">
                 <h3>Historial de mortalidad</h3>
                 <div class="historial-mortalidad" id="historial-mortalidad">
-                    <!-- Historial se llenará dinámicamente -->
+                    <p style="text-align: center; color: #666;">No hay registros de mortalidad</p>
                 </div>
             </div>
         </div>
@@ -377,9 +376,6 @@
             
             document.getElementById(tabId).classList.add('active');
             document.querySelector(`.tab[onclick="mostrarTab('${tabId}')"]`).classList.add('active');
-            
-            // Forzar actualización de datos al cambiar de pestaña
-            actualizar();
         }
 
         // Eliminar la crianza actual
@@ -396,6 +392,14 @@
             }
         }
 
+        // Función para calcular días transcurridos
+        function calcularDiasTranscurridos(fechaInicio) {
+            const hoy = new Date();
+            const inicio = new Date(fechaInicio);
+            const diffTime = hoy - inicio;
+            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        }
+
         // Actualiza toda la pantalla
         function actualizar() {
             const tieneCrianza = datos.fechaInicio !== null;
@@ -406,15 +410,22 @@
             
             // Si no hay crianza, mostrar solo el formulario y salir
             if (!tieneCrianza) {
-                // Establecer fecha actual como valor por defecto
-                const today = new Date();
-                const dateStr = today.toISOString().split('T')[0];
-                document.getElementById('fecha-inicio').value = dateStr;
+                // Limpiar proyección de consumo
+                document.getElementById('semana1').textContent = '0 kg';
+                document.getElementById('semana2').textContent = '0 kg';
+                document.getElementById('semana3').textContent = '0 kg';
+                document.getElementById('semana4').textContent = '0 kg';
+                document.getElementById('semana5').textContent = '0 kg';
+                document.getElementById('semana6').textContent = '0 kg';
+                document.getElementById('total-inicio').textContent = '0 kg';
+                document.getElementById('total-crecimiento').textContent = '0 kg';
+                document.getElementById('total-engorde').textContent = '0 kg';
+                document.getElementById('consumo-total').textContent = '0 kg';
                 return;
             }
             
             const pollosVivos = datos.pollosIniciales - datos.pollosMuertos;
-            const diasTranscurridos = Math.floor((new Date() - new Date(datos.fechaInicio)) / (1000 * 60 * 60 * 24));
+            const diasTranscurridos = calcularDiasTranscurridos(datos.fechaInicio);
             const semanaActual = Math.min(Math.floor(diasTranscurridos / 7), 5);
             
             // Actualizar barra de progreso
@@ -527,8 +538,12 @@
 
         // Carga los datos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
+            // Establecer fecha actual como valor por defecto
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            document.getElementById('fecha-inicio').value = dateStr;
+            
             actualizar();
-            // Mostrar pestaña de resumen por defecto
             mostrarTab('resumen');
         });
     </script>

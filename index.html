@@ -4,102 +4,20 @@
     <title>🐔 Pollos COBB 500</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
-        .container {
-            max-width: 650px;
-            margin: 0 auto;
-            padding: 15px;
-        }
-
-        h1 {
-            color: #4361ee;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-            overflow-x: auto;
-        }
-
-        .tab {
-            flex-shrink: 0;
-            padding: 10px 15px;
-            cursor: pointer;
-            background: #f0f7ff;
-            margin-right: 5px;
-            border-radius: 5px 5px 0 0;
-            text-align: center;
-        }
-
-        .tab.active {
-            background: #4361ee;
-            color: white;
-            font-weight: bold;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .metricas {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .metrica {
-            text-align: center;
-            padding: 15px;
-            border-radius: 18px;
-            color: white;
-            font-weight: bold;
-            min-height: 115px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .metrica h3 {
-            margin: 0 0 8px 0;
-            font-size: 1em;
-        }
-
-        .metrica p {
-            margin: 0;
-            font-size: 1.45em;
-            line-height: 1.15;
-        }
-
-        .metrica small {
-            margin-top: 8px;
-            display: block;
-            font-size: 0.8em;
-            line-height: 1.2;
-            opacity: 0.95;
-        }
+        body { font-family: Arial, sans-serif; background: #f5f7fa; margin: 0; padding: 0; color: #333; }
+        .container { max-width: 650px; margin: 0 auto; padding: 15px; }
+        h1 { color: #4361ee; text-align: center; margin-bottom: 15px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd; overflow-x: auto; }
+        .tab { flex-shrink: 0; padding: 10px 15px; cursor: pointer; background: #f0f7ff; margin-right: 5px; border-radius: 5px 5px 0 0; text-align: center; }
+        .tab.active { background: #4361ee; color: white; font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .metricas { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .metrica { text-align: center; padding: 15px; border-radius: 18px; color: white; font-weight: bold; min-height: 115px; display: flex; flex-direction: column; justify-content: center; }
+        .metrica h3 { margin: 0 0 8px 0; font-size: 1em; }
+        .metrica p { margin: 0; font-size: 1.45em; line-height: 1.15; }
+        .metrica small { margin-top: 8px; display: block; font-size: 0.8em; line-height: 1.2; opacity: 0.95; }
 
         .vivos { background: linear-gradient(45deg, #4cc9f0, #4361ee); }
         .muertos { background: linear-gradient(45deg, #f72585, #f8961e); }
@@ -110,29 +28,11 @@
         .peso-objetivo { background: linear-gradient(45deg, #00b894, #2ecc71); }
         .proximo-alimento { background: linear-gradient(45deg, #1d6f63, #67d5a4); }
         .lote-activo { background: linear-gradient(45deg, #6a11cb, #2575fc); }
+        .comedero-card { background: linear-gradient(45deg, #ff9800, #ff5722); }
+        .bebedero-card { background: linear-gradient(45deg, #00bcd4, #2196f3); }
 
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            margin: 8px 0;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 16px;
-        }
-
+        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin: 8px 0; font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
         .btn-iniciar { background: #4361ee; }
         .btn-eliminar { background: #f72585; }
         .btn-registrar { background: #4361ee; }
@@ -141,81 +41,18 @@
         .btn-secundario { background: #3a0ca3; }
         .btn-cambiar { background: #009688; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 0.9em;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            vertical-align: middle;
-        }
-
-        th {
-            background: #f0f7ff;
-        }
-
-        .historial-mortalidad {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #eee;
-            border-radius: 8px;
-        }
-
-        .historial-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .progress-bar {
-            height: 10px;
-            background: #e0e0e0;
-            border-radius: 5px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-
-        .progress {
-            height: 100%;
-            background: #4361ee;
-            width: 0%;
-        }
-
-        .nota {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 8px;
-        }
-
-        .lote-card {
-            border: 1px solid #e5e5e5;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #fafafa;
-        }
-
-        .lote-card.activo {
-            border: 2px solid #4361ee;
-            background: #f0f7ff;
-        }
-
-        .lote-card h4 {
-            margin: 0 0 5px 0;
-            color: #333;
-        }
-
-        .lote-card p {
-            margin: 3px 0;
-            color: #555;
-            font-size: 0.9em;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; vertical-align: middle; }
+        th { background: #f0f7ff; }
+        .historial-mortalidad { max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
+        .historial-item { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .progress-bar { height: 10px; background: #e0e0e0; border-radius: 5px; margin: 10px 0; overflow: hidden; }
+        .progress { height: 100%; background: #4361ee; width: 0%; }
+        .nota { font-size: 0.85em; color: #666; margin-top: 8px; }
+        .lote-card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 12px; margin-bottom: 10px; background: #fafafa; }
+        .lote-card.activo { border: 2px solid #4361ee; background: #f0f7ff; }
+        .lote-card h4 { margin: 0 0 5px 0; color: #333; }
+        .lote-card p { margin: 3px 0; color: #555; font-size: 0.9em; }
     </style>
 </head>
 
@@ -229,6 +66,7 @@
         <div class="tab" onclick="mostrarTab('mortalidad')">Mortalidad</div>
         <div class="tab" onclick="mostrarTab('consumo')">Consumo</div>
         <div class="tab" onclick="mostrarTab('pesos')">Pesos</div>
+        <div class="tab" onclick="mostrarTab('equipos')">Equipos</div>
     </div>
 
     <div id="resumen" class="tab-content active">
@@ -240,57 +78,20 @@
 
         <div id="resumen-crianza" class="card" style="display:none;">
             <h3>Resumen de Crianza</h3>
-
-            <div class="progress-bar">
-                <div class="progress" id="progreso-crianza"></div>
-            </div>
+            <div class="progress-bar"><div class="progress" id="progreso-crianza"></div></div>
 
             <div class="metricas">
-                <div class="metrica lote-activo">
-                    <h3>Lote activo</h3>
-                    <p id="nombre-lote-activo">-</p>
-                </div>
-
-                <div class="metrica vivos">
-                    <h3>Pollos vivos</h3>
-                    <p id="vivos">0</p>
-                </div>
-
-                <div class="metrica muertos">
-                    <h3>Pollos muertos</h3>
-                    <p id="muertos">0</p>
-                </div>
-
-                <div class="metrica dias">
-                    <h3>Días de vida</h3>
-                    <p id="dias-vida">0</p>
-                    <small id="fecha-nacimiento-lote">Nac: -</small>
-                </div>
-
-                <div class="metrica consumo">
-                    <h3>Consumo hoy</h3>
-                    <p id="consumo-diario-actual">0 kg</p>
-                </div>
-
-                <div class="metrica proximo-alimento">
-                    <h3>Próximo alim.</h3>
-                    <p id="proximo-alimento">-</p>
-                </div>
-
-                <div class="metrica peso-objetivo">
-                    <h3 id="texto-peso-objetivo">Peso obj.</h3>
-                    <p id="peso-objetivo-semana-actual">0 g</p>
-                </div>
-
-                <div class="metrica temperatura">
-                    <h3>Temperatura ideal</h3>
-                    <p id="temperatura">0°C</p>
-                </div>
-
-                <div class="metrica humedad">
-                    <h3>Humedad ideal</h3>
-                    <p id="humedad">0%</p>
-                </div>
+                <div class="metrica lote-activo"><h3>Lote activo</h3><p id="nombre-lote-activo">-</p></div>
+                <div class="metrica vivos"><h3>Pollos vivos</h3><p id="vivos">0</p></div>
+                <div class="metrica muertos"><h3>Pollos muertos</h3><p id="muertos">0</p></div>
+                <div class="metrica dias"><h3>Días de vida</h3><p id="dias-vida">0</p><small id="fecha-nacimiento-lote">Nac: -</small></div>
+                <div class="metrica consumo"><h3>Consumo hoy</h3><p id="consumo-diario-actual">0 kg</p></div>
+                <div class="metrica proximo-alimento"><h3>Próximo alim.</h3><p id="proximo-alimento">-</p></div>
+                <div class="metrica peso-objetivo"><h3 id="texto-peso-objetivo">Peso obj.</h3><p id="peso-objetivo-semana-actual">0 g</p></div>
+                <div class="metrica comedero-card"><h3>Comedero hoy</h3><p id="comedero-hoy">0 cm</p></div>
+                <div class="metrica bebedero-card"><h3>Bebedero hoy</h3><p id="bebedero-hoy">0 cm</p></div>
+                <div class="metrica temperatura"><h3>Temperatura ideal</h3><p id="temperatura">0°C</p></div>
+                <div class="metrica humedad"><h3>Humedad ideal</h3><p id="humedad">0%</p></div>
             </div>
         </div>
     </div>
@@ -315,9 +116,7 @@
 
         <div class="card">
             <h3>Mis lotes</h3>
-            <div id="lista-lotes">
-                <p>No hay lotes creados.</p>
-            </div>
+            <div id="lista-lotes"><p>No hay lotes creados.</p></div>
         </div>
     </div>
 
@@ -327,12 +126,9 @@
             <input type="number" id="muertos-hoy" placeholder="Pollos muertos hoy" min="1">
             <button class="btn-registrar" onclick="registrarMuertos()">✍️ Registrar</button>
         </div>
-
         <div class="card">
             <h3>Historial de mortalidad</h3>
-            <div class="historial-mortalidad" id="historial-mortalidad">
-                <p>No hay registros de mortalidad</p>
-            </div>
+            <div class="historial-mortalidad" id="historial-mortalidad"><p>No hay registros de mortalidad</p></div>
         </div>
     </div>
 
@@ -341,38 +137,16 @@
             <h3>Proyección de consumo total</h3>
             <table>
                 <thead>
-                    <tr>
-                        <th>Fase</th>
-                        <th>Consumo semanal</th>
-                        <th>Total fase</th>
-                    </tr>
+                    <tr><th>Fase</th><th>Consumo semanal</th><th>Total fase</th></tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td rowspan="3" id="fase-inicio-fechas">Inicio<br>-</td>
-                        <td id="semana1-consumo">0 kg</td>
-                        <td rowspan="3" id="total-fase-inicio-consumo">0 kg</td>
-                    </tr>
+                    <tr><td rowspan="3" id="fase-inicio-fechas">Inicio<br>-</td><td id="semana1-consumo">0 kg</td><td rowspan="3" id="total-fase-inicio-consumo">0 kg</td></tr>
                     <tr><td id="semana2-consumo">0 kg</td></tr>
                     <tr><td id="semana3-consumo">0 kg</td></tr>
-
-                    <tr>
-                        <td rowspan="2" id="fase-crecimiento-fechas">Crecimiento<br>-</td>
-                        <td id="semana4-consumo">0 kg</td>
-                        <td rowspan="2" id="total-fase-crecimiento-consumo">0 kg</td>
-                    </tr>
+                    <tr><td rowspan="2" id="fase-crecimiento-fechas">Crecimiento<br>-</td><td id="semana4-consumo">0 kg</td><td rowspan="2" id="total-fase-crecimiento-consumo">0 kg</td></tr>
                     <tr><td id="semana5-consumo">0 kg</td></tr>
-
-                    <tr>
-                        <td id="fase-engorde-fechas">Engorde<br>-</td>
-                        <td id="semana6-consumo">0 kg</td>
-                        <td id="total-fase-engorde-consumo">0 kg</td>
-                    </tr>
-
-                    <tr style="font-weight:bold;background:#f0f7ff;">
-                        <td colspan="2">Consumo total estimado</td>
-                        <td id="consumo-total-general">0 kg</td>
-                    </tr>
+                    <tr><td id="fase-engorde-fechas">Engorde<br>-</td><td id="semana6-consumo">0 kg</td><td id="total-fase-engorde-consumo">0 kg</td></tr>
+                    <tr style="font-weight:bold;background:#f0f7ff;"><td colspan="2">Consumo total estimado</td><td id="consumo-total-general">0 kg</td></tr>
                 </tbody>
             </table>
             <p class="nota">Los rangos de fecha se calculan desde la fecha de nacimiento del lote activo.</p>
@@ -394,13 +168,7 @@
         <div class="card">
             <h3>Pesos objetivo COBB 500</h3>
             <table>
-                <thead>
-                    <tr>
-                        <th>Semana</th>
-                        <th>Fecha real</th>
-                        <th>Peso objetivo</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Semana</th><th>Fecha real</th><th>Peso objetivo</th></tr></thead>
                 <tbody>
                     <tr><td>Semana 1</td><td id="rango-peso-1">-</td><td id="peso-sem1">0 g</td></tr>
                     <tr><td>Semana 2</td><td id="rango-peso-2">-</td><td id="peso-sem2">0 g</td></tr>
@@ -408,14 +176,52 @@
                     <tr><td>Semana 4</td><td id="rango-peso-4">-</td><td id="peso-sem4">0 g</td></tr>
                     <tr><td>Semana 5</td><td id="rango-peso-5">-</td><td id="peso-sem5">0 g</td></tr>
                     <tr><td>Semana 6</td><td id="rango-peso-6">-</td><td id="peso-sem6">0 g</td></tr>
-                    <tr style="font-weight:bold;background:#f0f7ff;">
-                        <td>Final</td>
-                        <td id="rango-final">-</td>
-                        <td id="peso-final">0 g</td>
-                    </tr>
+                    <tr style="font-weight:bold;background:#f0f7ff;"><td>Final</td><td id="rango-final">-</td><td id="peso-final">0 g</td></tr>
                 </tbody>
             </table>
             <p class="nota">El peso objetivo corresponde al final de cada semana.</p>
+        </div>
+    </div>
+
+    <div id="equipos" class="tab-content">
+        <div class="card">
+            <h3>Equipos requeridos hoy</h3>
+            <div class="metricas">
+                <div class="metrica comedero-card">
+                    <h3>Comedero lineal</h3>
+                    <p id="comedero-actual-equipos">0 cm</p>
+                    <small id="detalle-comedero-actual">-</small>
+                </div>
+                <div class="metrica bebedero-card">
+                    <h3>Bebedero lineal</h3>
+                    <p id="bebedero-actual-equipos">0 cm</p>
+                    <small id="detalle-bebedero-actual">-</small>
+                </div>
+            </div>
+            <p class="nota">El cálculo usa pollos vivos del lote activo. Fórmula: pollos vivos x cm/ave x simultáneo.</p>
+        </div>
+
+        <div class="card">
+            <h3>Proyección semanal de comederos y bebederos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Semana</th>
+                        <th>Fecha real</th>
+                        <th>Comedero requerido</th>
+                        <th>Bebedero requerido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Semana 1</td><td id="equipo-rango-1">-</td><td id="comedero-sem1">0 cm</td><td id="bebedero-sem1">0 cm</td></tr>
+                    <tr><td>Semana 2</td><td id="equipo-rango-2">-</td><td id="comedero-sem2">0 cm</td><td id="bebedero-sem2">0 cm</td></tr>
+                    <tr><td>Semana 3</td><td id="equipo-rango-3">-</td><td id="comedero-sem3">0 cm</td><td id="bebedero-sem3">0 cm</td></tr>
+                    <tr><td>Semana 4</td><td id="equipo-rango-4">-</td><td id="comedero-sem4">0 cm</td><td id="bebedero-sem4">0 cm</td></tr>
+                    <tr><td>Semana 5</td><td id="equipo-rango-5">-</td><td id="comedero-sem5">0 cm</td><td id="bebedero-sem5">0 cm</td></tr>
+                    <tr><td>Semana 6</td><td id="equipo-rango-6">-</td><td id="comedero-sem6">0 cm</td><td id="bebedero-sem6">0 cm</td></tr>
+                </tbody>
+            </table>
+            <p class="nota">Solo calcula centímetros lineales. El número de accesorios depende del tamaño real del comedero o bebedero que use el criador.</p>
         </div>
     </div>
 </div>
@@ -438,7 +244,6 @@ if (datosAntiguos && datosAntiguos.pollosIniciales > 0 && app.lotes.length === 0
         historialMortalidad: datosAntiguos.historialMortalidad || [],
         fechaCreacion: new Date().toISOString()
     };
-
     app.lotes.push(loteMigrado);
     app.loteActivoId = loteMigrado.id;
     guardarApp();
@@ -472,9 +277,17 @@ const pesoObjetivoPorDia = [
 ];
 
 const pesosObjetivoSemanal = [202, 570, 1116, 1783, 2521, 3278];
-
 const temperaturaIdealPorSemana = [32.5, 31.0, 29.5, 27.5, 25.5, 23.5];
 const humedadIdealPorSemana = [65, 65, 60, 60, 55, 55];
+
+const requerimientosEquipos = [
+    { semana: 1, comederoCmAve: 3, simultaneoComida: 0.70, bebederoCmAve: 0.5, simultaneoAgua: 0.30 },
+    { semana: 2, comederoCmAve: 4, simultaneoComida: 0.60, bebederoCmAve: 0.75, simultaneoAgua: 0.30 },
+    { semana: 3, comederoCmAve: 6, simultaneoComida: 0.55, bebederoCmAve: 1, simultaneoAgua: 0.25 },
+    { semana: 4, comederoCmAve: 7, simultaneoComida: 0.50, bebederoCmAve: 1.5, simultaneoAgua: 0.25 },
+    { semana: 5, comederoCmAve: 9, simultaneoComida: 0.45, bebederoCmAve: 1.5, simultaneoAgua: 0.25 },
+    { semana: 6, comederoCmAve: 10, simultaneoComida: 0.40, bebederoCmAve: 2, simultaneoAgua: 0.25 }
+];
 
 function guardarApp() {
     localStorage.setItem('pollosCobbApp', JSON.stringify(app));
@@ -490,10 +303,7 @@ function fechaDesdeInput(fechaTexto) {
 }
 
 function formatearFecha(fecha) {
-    return fecha.toLocaleDateString('es-PE', {
-        day: 'numeric',
-        month: 'short'
-    });
+    return fecha.toLocaleDateString('es-PE', { day: 'numeric', month: 'short' });
 }
 
 function rangoFechas(inicio, fin) {
@@ -523,7 +333,7 @@ function crearLote() {
 
     const nuevoLote = {
         id: Date.now(),
-        nombre: nombre,
+        nombre,
         pollosIniciales: cantidad,
         pollosMuertos: 0,
         fechaInicio: fecha,
@@ -533,7 +343,6 @@ function crearLote() {
 
     app.lotes.push(nuevoLote);
     app.loteActivoId = nuevoLote.id;
-
     guardarApp();
 
     document.getElementById('nombre-lote').value = '';
@@ -542,15 +351,12 @@ function crearLote() {
 
     actualizar();
     mostrarTab('resumen');
-
     alert(`Lote "${nombre}" creado con ${cantidad} pollos.`);
 }
 
 function seleccionarLoteDesdeSelect() {
     const idSeleccionado = Number(document.getElementById('selector-lotes').value);
-
     if (!idSeleccionado) return;
-
     app.loteActivoId = idSeleccionado;
     guardarApp();
     actualizar();
@@ -565,15 +371,11 @@ function seleccionarLote(id) {
 
 function eliminarLote(id) {
     const lote = app.lotes.find(l => l.id === id);
-
     if (!lote) return;
 
-    if (!confirm(`¿Seguro que deseas eliminar el lote "${lote.nombre}"? Esta acción no se puede deshacer.`)) {
-        return;
-    }
+    if (!confirm(`¿Seguro que deseas eliminar el lote "${lote.nombre}"? Esta acción no se puede deshacer.`)) return;
 
     app.lotes = app.lotes.filter(l => l.id !== id);
-
     if (app.loteActivoId === id) {
         app.loteActivoId = app.lotes.length > 0 ? app.lotes[0].id : null;
     }
@@ -591,9 +393,7 @@ function actualizarSelectorLotes() {
     }
 
     selector.innerHTML = app.lotes.map(lote => `
-        <option value="${lote.id}" ${lote.id === app.loteActivoId ? 'selected' : ''}>
-            ${lote.nombre}
-        </option>
+        <option value="${lote.id}" ${lote.id === app.loteActivoId ? 'selected' : ''}>${lote.nombre}</option>
     `).join('');
 }
 
@@ -640,7 +440,6 @@ function actualizar() {
 
     const hoy = new Date();
     const fechaInicio = fechaDesdeInput(lote.fechaInicio);
-
     const diasTranscurridos = Math.floor((hoy - fechaInicio) / (1000 * 60 * 60 * 24));
     const diaIndex = Math.min(Math.max(diasTranscurridos, 0), 42);
     const semanaIndex = Math.min(Math.floor(diaIndex / 7), 5);
@@ -648,16 +447,18 @@ function actualizar() {
 
     const consumoHoyKg = (pollosVivos * consumoDiarioPorDia[diaIndex]) / 1000;
     const pesoHoy = pesoObjetivoPorDia[diaIndex];
-
     const fechaFinSemana = sumarDias(fechaInicio, ((semanaIndex + 1) * 7) - 1);
 
     let textoAlimento = 'Finalizado';
-
     if (diaIndex < 21) {
         textoAlimento = `Crecimiento<br>${formatearFecha(sumarDias(fechaInicio, 21))}`;
     } else if (diaIndex < 35) {
         textoAlimento = `Engorde<br>${formatearFecha(sumarDias(fechaInicio, 35))}`;
     }
+
+    const reqActual = requerimientosEquipos[semanaIndex];
+    const comederoActual = pollosVivos * reqActual.comederoCmAve * reqActual.simultaneoComida;
+    const bebederoActual = pollosVivos * reqActual.bebederoCmAve * reqActual.simultaneoAgua;
 
     document.getElementById('nombre-lote-activo').textContent = lote.nombre;
     document.getElementById('vivos').textContent = pollosVivos;
@@ -666,12 +467,10 @@ function actualizar() {
     document.getElementById('fecha-nacimiento-lote').textContent = `Nac: ${formatearFecha(fechaInicio)}`;
     document.getElementById('consumo-diario-actual').textContent = consumoHoyKg.toFixed(2) + ' kg';
     document.getElementById('proximo-alimento').innerHTML = textoAlimento;
-
-    document.getElementById('texto-peso-objetivo').textContent =
-        `Peso obj. al ${formatearFecha(fechaFinSemana)}`;
-
+    document.getElementById('texto-peso-objetivo').textContent = `Peso obj. al ${formatearFecha(fechaFinSemana)}`;
     document.getElementById('peso-objetivo-semana-actual').textContent = pesoHoy + ' g';
-
+    document.getElementById('comedero-hoy').textContent = Math.ceil(comederoActual) + ' cm';
+    document.getElementById('bebedero-hoy').textContent = Math.ceil(bebederoActual) + ' cm';
     document.getElementById('temperatura').textContent = temperaturaIdealPorSemana[semanaIndex] + '°C';
     document.getElementById('humedad').textContent = humedadIdealPorSemana[semanaIndex] + '%';
 
@@ -680,6 +479,7 @@ function actualizar() {
 
     actualizarProyeccionConsumo();
     actualizarProyeccionPesos();
+    actualizarEquipos();
     actualizarHistorialMortalidad();
 }
 
@@ -689,6 +489,7 @@ function limpiarTablas() {
 
     actualizarProyeccionConsumo();
     actualizarProyeccionPesos();
+    actualizarEquipos();
     actualizarHistorialMortalidad();
 }
 
@@ -714,7 +515,6 @@ function actualizarProyeccionConsumo() {
     document.getElementById('semana4-consumo').textContent = semana4Kg.toFixed(2) + ' kg';
     document.getElementById('semana5-consumo').textContent = semana5Kg.toFixed(2) + ' kg';
     document.getElementById('semana6-consumo').textContent = semana6Kg.toFixed(2) + ' kg';
-
     document.getElementById('total-fase-inicio-consumo').textContent = totalInicio.toFixed(2) + ' kg';
     document.getElementById('total-fase-crecimiento-consumo').textContent = totalCrecimiento.toFixed(2) + ' kg';
     document.getElementById('total-fase-engorde-consumo').textContent = totalEngorde.toFixed(2) + ' kg';
@@ -729,14 +529,9 @@ function actualizarProyeccionConsumo() {
 
     const nacimiento = fechaDesdeInput(lote.fechaInicio);
 
-    document.getElementById('fase-inicio-fechas').innerHTML =
-        `Inicio<br>${rangoFechas(sumarDias(nacimiento, 0), sumarDias(nacimiento, 20))}`;
-
-    document.getElementById('fase-crecimiento-fechas').innerHTML =
-        `Crecimiento<br>${rangoFechas(sumarDias(nacimiento, 21), sumarDias(nacimiento, 34))}`;
-
-    document.getElementById('fase-engorde-fechas').innerHTML =
-        `Engorde<br>${rangoFechas(sumarDias(nacimiento, 35), sumarDias(nacimiento, 41))}`;
+    document.getElementById('fase-inicio-fechas').innerHTML = `Inicio<br>${rangoFechas(sumarDias(nacimiento, 0), sumarDias(nacimiento, 20))}`;
+    document.getElementById('fase-crecimiento-fechas').innerHTML = `Crecimiento<br>${rangoFechas(sumarDias(nacimiento, 21), sumarDias(nacimiento, 34))}`;
+    document.getElementById('fase-engorde-fechas').innerHTML = `Engorde<br>${rangoFechas(sumarDias(nacimiento, 35), sumarDias(nacimiento, 41))}`;
 }
 
 function actualizarProyeccionPesos() {
@@ -754,7 +549,6 @@ function actualizarProyeccionPesos() {
         for (let semana = 1; semana <= 6; semana++) {
             document.getElementById(`rango-peso-${semana}`).textContent = '-';
         }
-
         document.getElementById('rango-final').textContent = '-';
         return;
     }
@@ -764,12 +558,63 @@ function actualizarProyeccionPesos() {
     for (let semana = 1; semana <= 6; semana++) {
         const inicio = sumarDias(nacimiento, (semana - 1) * 7);
         const fin = sumarDias(nacimiento, (semana * 7) - 1);
-
-        document.getElementById(`rango-peso-${semana}`).textContent =
-            rangoFechas(inicio, fin);
+        document.getElementById(`rango-peso-${semana}`).textContent = rangoFechas(inicio, fin);
     }
 
     document.getElementById('rango-final').textContent = formatearFecha(sumarDias(nacimiento, 41));
+}
+
+function actualizarEquipos() {
+    const lote = obtenerLoteActivo();
+    const pollos = lote ? lote.pollosIniciales - lote.pollosMuertos : 0;
+
+    if (!lote) {
+        document.getElementById('comedero-actual-equipos').textContent = '0 cm';
+        document.getElementById('bebedero-actual-equipos').textContent = '0 cm';
+        document.getElementById('detalle-comedero-actual').textContent = '-';
+        document.getElementById('detalle-bebedero-actual').textContent = '-';
+
+        for (let i = 1; i <= 6; i++) {
+            document.getElementById(`equipo-rango-${i}`).textContent = '-';
+            document.getElementById(`comedero-sem${i}`).textContent = '0 cm';
+            document.getElementById(`bebedero-sem${i}`).textContent = '0 cm';
+        }
+        return;
+    }
+
+    const nacimiento = fechaDesdeInput(lote.fechaInicio);
+    const hoy = new Date();
+    const diasTranscurridos = Math.floor((hoy - nacimiento) / (1000 * 60 * 60 * 24));
+    const diaIndex = Math.min(Math.max(diasTranscurridos, 0), 42);
+    const semanaIndex = Math.min(Math.floor(diaIndex / 7), 5);
+    const reqActual = requerimientosEquipos[semanaIndex];
+
+    const comederoActual = pollos * reqActual.comederoCmAve * reqActual.simultaneoComida;
+    const bebederoActual = pollos * reqActual.bebederoCmAve * reqActual.simultaneoAgua;
+
+    document.getElementById('comedero-actual-equipos').textContent = Math.ceil(comederoActual) + ' cm';
+    document.getElementById('bebedero-actual-equipos').textContent = Math.ceil(bebederoActual) + ' cm';
+
+    document.getElementById('detalle-comedero-actual').textContent =
+        `Sem ${reqActual.semana}: ${reqActual.comederoCmAve} cm/ave x ${reqActual.simultaneoComida}`;
+
+    document.getElementById('detalle-bebedero-actual').textContent =
+        `Sem ${reqActual.semana}: ${reqActual.bebederoCmAve} cm/ave x ${reqActual.simultaneoAgua}`;
+
+    for (let i = 0; i < requerimientosEquipos.length; i++) {
+        const req = requerimientosEquipos[i];
+        const semana = i + 1;
+
+        const inicio = sumarDias(nacimiento, i * 7);
+        const fin = sumarDias(nacimiento, (semana * 7) - 1);
+
+        const comedero = pollos * req.comederoCmAve * req.simultaneoComida;
+        const bebedero = pollos * req.bebederoCmAve * req.simultaneoAgua;
+
+        document.getElementById(`equipo-rango-${semana}`).textContent = rangoFechas(inicio, fin);
+        document.getElementById(`comedero-sem${semana}`).textContent = Math.ceil(comedero) + ' cm';
+        document.getElementById(`bebedero-sem${semana}`).textContent = Math.ceil(bebedero) + ' cm';
+    }
 }
 
 function actualizarHistorialMortalidad() {
@@ -781,9 +626,7 @@ function actualizarHistorialMortalidad() {
         return;
     }
 
-    const historialOrdenado = lote.historialMortalidad
-        .slice()
-        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    const historialOrdenado = lote.historialMortalidad.slice().sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
     historialDiv.innerHTML = historialOrdenado.map(item => `
         <div class="historial-item">
@@ -816,10 +659,7 @@ function registrarMuertos() {
     }
 
     lote.pollosMuertos += muertos;
-    lote.historialMortalidad.push({
-        fecha: new Date().toISOString(),
-        cantidad: muertos
-    });
+    lote.historialMortalidad.push({ fecha: new Date().toISOString(), cantidad: muertos });
 
     guardarApp();
     actualizar();
@@ -830,8 +670,7 @@ function calcularCostos() {
     const lote = obtenerLoteActivo();
 
     if (!lote) {
-        document.getElementById('resultado-costos').innerHTML =
-            '<span style="color:red;">Primero crea o selecciona un lote.</span>';
+        document.getElementById('resultado-costos').innerHTML = '<span style="color:red;">Primero crea o selecciona un lote.</span>';
         return;
     }
 
@@ -840,8 +679,7 @@ function calcularCostos() {
     const precioEngorde = parseFloat(document.getElementById('precio-engorde').value);
 
     if (isNaN(precioInicio) || isNaN(precioCrecimiento) || isNaN(precioEngorde)) {
-        document.getElementById('resultado-costos').innerHTML =
-            '<span style="color:red;">Ingrese los 3 precios.</span>';
+        document.getElementById('resultado-costos').innerHTML = '<span style="color:red;">Ingrese los 3 precios.</span>';
         return;
     }
 
@@ -851,14 +689,10 @@ function calcularCostos() {
     const kgCrecimiento = pollos * (consumoSemanalPorAve[3] + consumoSemanalPorAve[4]) / 1000;
     const kgEngorde = pollos * consumoSemanalPorAve[5] / 1000;
 
-    const costoTotal =
-        (kgInicio * precioInicio) +
-        (kgCrecimiento * precioCrecimiento) +
-        (kgEngorde * precioEngorde);
+    const costoTotal = (kgInicio * precioInicio) + (kgCrecimiento * precioCrecimiento) + (kgEngorde * precioEngorde);
 
-    document.getElementById('resultado-costos').innerHTML = `
-        <p>Costo total proyectado para <strong>${lote.nombre}</strong>: S/ ${costoTotal.toFixed(2)}</p>
-    `;
+    document.getElementById('resultado-costos').innerHTML =
+        `<p>Costo total proyectado para <strong>${lote.nombre}</strong>: S/ ${costoTotal.toFixed(2)}</p>`;
 }
 
 function exportarDatos() {
@@ -869,10 +703,7 @@ function exportarDatos() {
         return;
     }
 
-    const dataStr =
-        'data:text/json;charset=utf-8,' +
-        encodeURIComponent(JSON.stringify(lote, null, 2));
-
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(lote, null, 2));
     const link = document.createElement('a');
     link.setAttribute('href', dataStr);
     link.setAttribute('download', `lote_${lote.nombre.replace(/\s+/g, '_')}.json`);
@@ -890,6 +721,7 @@ function mostrarTab(tabId) {
 
     if (tabId === 'consumo') actualizarProyeccionConsumo();
     if (tabId === 'pesos') actualizarProyeccionPesos();
+    if (tabId === 'equipos') actualizarEquipos();
     if (tabId === 'lotes') {
         actualizarSelectorLotes();
         actualizarListaLotes();

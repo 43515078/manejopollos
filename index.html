@@ -193,12 +193,15 @@
                     <small id="detalle-comedero-actual">-</small>
                 </div>
                 <div class="metrica bebedero-card">
-                    <h3>Bebedero lineal</h3>
+                    <h3>Bebedero lineal/circular</h3>
                     <p id="bebedero-actual-equipos">0 cm</p>
                     <small id="detalle-bebedero-actual">-</small>
                 </div>
             </div>
-            <p class="nota">El cálculo usa pollos vivos del lote activo. Fórmula: pollos vivos x cm/ave x simultáneo.</p>
+            <p class="nota">
+                Comedero: pollos vivos × cm/ave × factor de simultaneidad.
+                Bebedero: pollos vivos × cm/ave × 1.20 de seguridad, sin reducir por simultaneidad.
+            </p>
         </div>
 
         <div class="card">
@@ -221,7 +224,9 @@
                     <tr><td>Semana 6</td><td id="equipo-rango-6">-</td><td id="comedero-sem6">0 cm</td><td id="bebedero-sem6">0 cm</td></tr>
                 </tbody>
             </table>
-            <p class="nota">Solo calcula centímetros lineales. El número de accesorios depende del tamaño real del comedero o bebedero que use el criador.</p>
+            <p class="nota">
+                Solo calcula centímetros útiles. Para bebederos se agrega 20% de seguridad porque el agua no debe limitarse como el alimento.
+            </p>
         </div>
     </div>
 </div>
@@ -280,14 +285,24 @@ const pesosObjetivoSemanal = [202, 570, 1116, 1783, 2521, 3278];
 const temperaturaIdealPorSemana = [32.5, 31.0, 29.5, 27.5, 25.5, 23.5];
 const humedadIdealPorSemana = [65, 65, 60, 60, 55, 55];
 
+const FACTOR_SEGURIDAD_BEBEDERO = 1.20;
+
 const requerimientosEquipos = [
-    { semana: 1, comederoCmAve: 3, simultaneoComida: 0.70, bebederoCmAve: 0.5, simultaneoAgua: 0.30 },
-    { semana: 2, comederoCmAve: 4, simultaneoComida: 0.60, bebederoCmAve: 0.75, simultaneoAgua: 0.30 },
-    { semana: 3, comederoCmAve: 6, simultaneoComida: 0.55, bebederoCmAve: 1, simultaneoAgua: 0.25 },
-    { semana: 4, comederoCmAve: 7, simultaneoComida: 0.50, bebederoCmAve: 1.5, simultaneoAgua: 0.25 },
-    { semana: 5, comederoCmAve: 9, simultaneoComida: 0.45, bebederoCmAve: 1.5, simultaneoAgua: 0.25 },
-    { semana: 6, comederoCmAve: 10, simultaneoComida: 0.40, bebederoCmAve: 2, simultaneoAgua: 0.25 }
+    { semana: 1, comederoCmAve: 3, simultaneoComida: 0.70, bebederoCmAve: 0.5 },
+    { semana: 2, comederoCmAve: 4, simultaneoComida: 0.60, bebederoCmAve: 0.75 },
+    { semana: 3, comederoCmAve: 6, simultaneoComida: 0.55, bebederoCmAve: 1 },
+    { semana: 4, comederoCmAve: 7, simultaneoComida: 0.50, bebederoCmAve: 1.5 },
+    { semana: 5, comederoCmAve: 9, simultaneoComida: 0.45, bebederoCmAve: 1.5 },
+    { semana: 6, comederoCmAve: 10, simultaneoComida: 0.40, bebederoCmAve: 2 }
 ];
+
+function calcularComederoCm(pollos, req) {
+    return pollos * req.comederoCmAve * req.simultaneoComida;
+}
+
+function calcularBebederoCm(pollos, req) {
+    return pollos * req.bebederoCmAve * FACTOR_SEGURIDAD_BEBEDERO;
+}
 
 function guardarApp() {
     localStorage.setItem('pollosCobbApp', JSON.stringify(app));
@@ -457,8 +472,8 @@ function actualizar() {
     }
 
     const reqActual = requerimientosEquipos[semanaIndex];
-    const comederoActual = pollosVivos * reqActual.comederoCmAve * reqActual.simultaneoComida;
-    const bebederoActual = pollosVivos * reqActual.bebederoCmAve * reqActual.simultaneoAgua;
+    const comederoActual = calcularComederoCm(pollosVivos, reqActual);
+    const bebederoActual = calcularBebederoCm(pollosVivos, reqActual);
 
     document.getElementById('nombre-lote-activo').textContent = lote.nombre;
     document.getElementById('vivos').textContent = pollosVivos;
@@ -589,17 +604,17 @@ function actualizarEquipos() {
     const semanaIndex = Math.min(Math.floor(diaIndex / 7), 5);
     const reqActual = requerimientosEquipos[semanaIndex];
 
-    const comederoActual = pollos * reqActual.comederoCmAve * reqActual.simultaneoComida;
-    const bebederoActual = pollos * reqActual.bebederoCmAve * reqActual.simultaneoAgua;
+    const comederoActual = calcularComederoCm(pollos, reqActual);
+    const bebederoActual = calcularBebederoCm(pollos, reqActual);
 
     document.getElementById('comedero-actual-equipos').textContent = Math.ceil(comederoActual) + ' cm';
     document.getElementById('bebedero-actual-equipos').textContent = Math.ceil(bebederoActual) + ' cm';
 
     document.getElementById('detalle-comedero-actual').textContent =
-        `Sem ${reqActual.semana}: ${reqActual.comederoCmAve} cm/ave x ${reqActual.simultaneoComida}`;
+        `Sem ${reqActual.semana}: ${reqActual.comederoCmAve} cm/ave x simultáneo ${reqActual.simultaneoComida}`;
 
     document.getElementById('detalle-bebedero-actual').textContent =
-        `Sem ${reqActual.semana}: ${reqActual.bebederoCmAve} cm/ave x ${reqActual.simultaneoAgua}`;
+        `Sem ${reqActual.semana}: ${reqActual.bebederoCmAve} cm/ave x seguridad ${FACTOR_SEGURIDAD_BEBEDERO}`;
 
     for (let i = 0; i < requerimientosEquipos.length; i++) {
         const req = requerimientosEquipos[i];
@@ -608,8 +623,8 @@ function actualizarEquipos() {
         const inicio = sumarDias(nacimiento, i * 7);
         const fin = sumarDias(nacimiento, (semana * 7) - 1);
 
-        const comedero = pollos * req.comederoCmAve * req.simultaneoComida;
-        const bebedero = pollos * req.bebederoCmAve * req.simultaneoAgua;
+        const comedero = calcularComederoCm(pollos, req);
+        const bebedero = calcularBebederoCm(pollos, req);
 
         document.getElementById(`equipo-rango-${semana}`).textContent = rangoFechas(inicio, fin);
         document.getElementById(`comedero-sem${semana}`).textContent = Math.ceil(comedero) + ' cm';

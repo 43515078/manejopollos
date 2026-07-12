@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4361ee">
   <title>🐔 AviGenio COBB 500 Pro 4.5</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icon-192.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/icon-192.png">
   <style>
     :root {
       --primary:#4361ee;
@@ -1271,7 +1271,7 @@ const exportarRespaldoCompletoOriginal=exportarRespaldoCompleto;exportarRespaldo
 function actualizarSeguridadUI(){const sel=document.getElementById('config-bloqueo');if(sel)sel.value=String(app.config.bloqueoMin||0);document.getElementById('demo-ribbon').style.display=app.config.modoDemo?'block':'none';}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;document.getElementById('btn-instalar').style.display='inline-block';});
 async function instalarPWA(){if(!deferredInstallPrompt)return alert('La instalación aparecerá al abrir la app desde un sitio HTTPS compatible.');deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;document.getElementById('btn-instalar').style.display='none';}
-if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 const actualizarTodoV4=actualizarTodo;actualizarTodo=function(){asegurarV45();actualizarTodoV4();actualizarPapelera();actualizarSaludRespaldo();actualizarSeguridadUI();};
 
 document.addEventListener('DOMContentLoaded',()=>{

@@ -1,0 +1,13 @@
+{
+  "name": "AviGenio COBB 500 Pro",
+  "short_name": "AviGenio",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#4361ee",
+  "description": "Manejo productivo, sanitario y económico de pollos COBB 500.",
+  "icons": [
+    {"src":"icon-192.svg","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"},
+    {"src":"icon-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

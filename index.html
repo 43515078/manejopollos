@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4361ee">
   <title>🐔 AviGenio COBB 500 Pro 4.5</title>
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.svg">
   <style>
     :root {
       --primary:#4361ee;
@@ -283,6 +283,7 @@
           <div class="metrica g3"><h3>Consumo esperado hoy</h3><p id="consumo-diario-esperado">0 kg</p><small>Referencia por edad</small></div>
           <div class="metrica g12"><h3>Consumo real acumulado</h3><p id="consumo-real-acumulado">0 kg</p><small id="consumo-cumplimiento">Sin registros</small></div>
           <div class="metrica g7"><h3>Peso objetivo hoy</h3><p id="peso-objetivo-hoy">0 g</p><small id="peso-real-resumen">Real: sin registro</small></div>
+          <div class="metrica g13"><h3>Meta fin de semana</h3><p id="peso-meta-semanal">0 g</p><small id="fecha-meta-semanal">Fecha meta: -</small></div>
           <div class="metrica g8"><h3>Conversión alimenticia</h3><p id="fcr-resumen">-</p><small id="fcr-detalle">Requiere consumo y peso</small></div>
           <div class="metrica g5"><h3>Temperatura recomendada</h3><p id="temperatura-recomendada">0°C</p><small id="temperatura-real-resumen">Real: sin registro</small></div>
           <div class="metrica g6"><h3>Humedad recomendada</h3><p id="humedad-recomendada">0%</p><small id="humedad-real-resumen">Real: sin registro</small></div>
@@ -449,7 +450,7 @@
       <h3>Objetivos por semana</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Semana</th><th>Rango de fecha</th><th>Peso objetivo final</th></tr></thead>
+          <thead><tr><th>Semana</th><th>Fecha de meta</th><th>Peso objetivo final</th></tr></thead>
           <tbody id="tabla-pesos-objetivo"></tbody>
         </table>
       </div>
@@ -689,12 +690,18 @@ const consumoDiarioPorDia = [
 ];
 
 const consumoSemanalPorAve = [180,408,732,1039,1276,1465];
-const pesoObjetivoPorDia = [
-  42,55,71,90,112,138,168,202,240,283,330,382,440,503,570,639,711,786,864,945,1029,
-  1116,1205,1296,1390,1486,1583,1682,1783,1886,1989,2094,2200,2306,2413,2521,2629,2738,
-  2846,2954,3062,3170,3278
+// Pesos publicados por la casa genética al finalizar cada semana de vida.
+// Día 0 corresponde al peso inicial de referencia y luego días 7, 14, 21, 28, 35 y 42.
+const puntosPesoOficial = [
+  {dia:0,peso:42},
+  {dia:7,peso:202},
+  {dia:14,peso:570},
+  {dia:21,peso:1116},
+  {dia:28,peso:1783},
+  {dia:35,peso:2521},
+  {dia:42,peso:3278}
 ];
-const pesosObjetivoSemanal = [202,570,1116,1783,2521,3278];
+const pesosObjetivoSemanal = puntosPesoOficial.slice(1).map(x=>x.peso);
 const temperaturaIdealPorSemana = [32.5,31,29.5,27.5,25.5,23.5];
 const humedadIdealPorSemana = [65,65,60,60,55,55];
 const FACTOR_SEGURIDAD_BEBEDERO = 1.20;
@@ -827,7 +834,22 @@ function obtenerLoteActivo(){ return app.lotes.find(l=>l.id===app.loteActivoId)|
 function muertosAcumulados(lote){ return lote.historialMortalidad.reduce((s,x)=>s+(Number(x.cantidad)||0),0); }
 function vivosActuales(lote){ return Math.max(0,lote.pollosIniciales-muertosAcumulados(lote)); }
 function diaActualLote(lote){ return diasEntre(fechaDesdeInput(lote.fechaInicio),new Date()); }
-function objetivoPesoDia(dia){ return pesoObjetivoPorDia[clamp(dia,0,42)]; }
+function objetivoPesoDia(dia){
+  const d=clamp(Number(dia)||0,0,42);
+  for(let i=0;i<puntosPesoOficial.length-1;i++){
+    const a=puntosPesoOficial[i],b=puntosPesoOficial[i+1];
+    if(d>=a.dia&&d<=b.dia){
+      const proporcion=(d-a.dia)/(b.dia-a.dia);
+      return Math.round(a.peso+(b.peso-a.peso)*proporcion);
+    }
+  }
+  return puntosPesoOficial[puntosPesoOficial.length-1].peso;
+}
+function metaPesoSemana(dia){
+  const d=clamp(Number(dia)||0,0,42);
+  const semana=clamp(Math.floor(Math.max(d-1,0)/7)+1,1,6);
+  return {semana,diaMeta:semana*7,peso:pesosObjetivoSemanal[semana-1]};
+}
 function consumoEsperadoAveDia(dia){ return consumoDiarioPorDia[clamp(dia,0,42)]||0; }
 function semanaPorDia(dia){ return clamp(Math.floor(clamp(dia,0,42)/7),0,5); }
 function fasePorDia(dia){ return dia<=20?'Inicio':dia<=34?'Crecimiento':'Engorde'; }
@@ -1061,7 +1083,7 @@ function actualizarResumen(){
   sin.style.display=lote?'none':'block';cont.style.display=lote?'block':'none';if(!lote)return;
   const dia=diaActualLote(lote),diaRef=clamp(dia,0,42),sem=semanaPorDia(diaRef),muertos=muertosAcumulados(lote),vivos=vivosActuales(lote),mort=lote.pollosIniciales?muertos/lote.pollosIniciales*100:0,sup=100-mort;
   const consumoHoy=vivos*consumoEsperadoAveDia(diaRef)/1000,consReal=consumoRealAcumulado(lote),consEsp=consumoEsperadoAcumulado(lote),cumpl=consEsp?consReal/consEsp*100:null;
-  const pesoObj=objetivoPesoDia(diaRef),uPeso=ultimoPeso(lote),uDiario=ultimoDiario(lote),fcr=calcularFCR(lote),req=requerimientosEquipos[sem],costos=costosLote(lote);
+  const pesoObj=objetivoPesoDia(diaRef),metaSemanal=metaPesoSemana(diaRef),uPeso=ultimoPeso(lote),uDiario=ultimoDiario(lote),fcr=calcularFCR(lote),req=requerimientosEquipos[sem],costos=costosLote(lote);
   document.getElementById('nombre-lote-activo').textContent=lote.nombre;
   document.getElementById('estado-lote-texto').textContent=lote.estado==='cerrado'?'Cerrado':'En seguimiento';
   const badge=document.getElementById('estado-lote-badge');badge.textContent=lote.estado==='cerrado'?'Lote cerrado':'Lote activo';badge.className='badge '+(lote.estado==='cerrado'?'gray':'green');
@@ -1070,6 +1092,8 @@ function actualizarResumen(){
   document.getElementById('dias-vida').textContent=Math.max(dia,0);document.getElementById('fecha-nacimiento-lote').textContent='Nac: '+formatearFecha(fechaDesdeInput(lote.fechaInicio));
   document.getElementById('consumo-diario-esperado').textContent=numero(consumoHoy)+' kg';document.getElementById('consumo-real-acumulado').textContent=numero(consReal)+' kg';document.getElementById('consumo-cumplimiento').textContent=cumpl===null?'Sin registros':`Cumplimiento ${cumpl.toFixed(1)}%`;
   document.getElementById('peso-objetivo-hoy').textContent=pesoObj+' g';document.getElementById('peso-real-resumen').textContent=uPeso?`Real: ${numero(uPeso.pesoPromedio,0)} g (${formatearFecha(fechaDesdeInput(uPeso.fecha))})`:'Real: sin registro';
+  document.getElementById('peso-meta-semanal').textContent=metaSemanal.peso+' g';
+  document.getElementById('fecha-meta-semanal').textContent=`Semana ${metaSemanal.semana} · meta al ${formatearFecha(sumarDias(fechaDesdeInput(lote.fechaInicio),metaSemanal.diaMeta))}`;
   document.getElementById('fcr-resumen').textContent=fcr?fcr.toFixed(2):'-';document.getElementById('fcr-detalle').textContent=fcr?'Consumo real ÷ peso vivo':'Requiere consumo y peso';
   document.getElementById('temperatura-recomendada').textContent=temperaturaIdealPorSemana[sem]+'°C';document.getElementById('humedad-recomendada').textContent=humedadIdealPorSemana[sem]+'%';
   document.getElementById('temperatura-real-resumen').textContent=uDiario?.temperatura!=null?`Real: ${uDiario.temperatura}°C`:'Real: sin registro';document.getElementById('humedad-real-resumen').textContent=uDiario?.humedad!=null?`Real: ${uDiario.humedad}%`:'Real: sin registro';
@@ -1112,7 +1136,7 @@ function actualizarPesos(){
   const lista=[...lote.registrosPeso].sort((a,b)=>b.fecha.localeCompare(a.fecha));
   tb.innerHTML=lista.length?lista.map(r=>{const edad=edadEnFecha(lote,r.fecha),obj=objetivoPesoDia(clamp(edad,0,42)),dif=r.pesoPromedio-obj,estado=estadoComparacionPeso(r.pesoPromedio,obj);return `<tr><td>${formatearFecha(fechaDesdeInput(r.fecha))}</td><td>${edad}</td><td>${r.muestra||'-'}</td><td>${numero(r.pesoPromedio,0)} g</td><td>${obj} g</td><td>${dif>=0?'+':''}${numero(dif,0)} g</td><td><span class="badge ${estado.clase}">${estado.texto}</span></td><td><button class="btn-small btn-secondary" onclick="editarPeso(${r.id})">Editar</button><button class="btn-small btn-danger" onclick="eliminarPeso(${r.id})">Eliminar</button></td></tr>`;}).join(''):'<tr><td colspan="8">Sin registros.</td></tr>';
   if(lista.length){const r=lista[0],edad=edadEnFecha(lote,r.fecha),obj=objetivoPesoDia(clamp(edad,0,42)),dif=r.pesoPromedio-obj,pct=r.pesoPromedio/obj*100,estado=estadoComparacionPeso(r.pesoPromedio,obj);res.className='summary-box';res.innerHTML=`<p><strong>Fecha:</strong> ${formatearFecha(fechaDesdeInput(r.fecha))} · día ${edad}</p><p><strong>Peso real:</strong> ${numero(r.pesoPromedio,0)} g</p><p><strong>Objetivo:</strong> ${obj} g</p><p><strong>Diferencia:</strong> ${dif>=0?'+':''}${numero(dif,0)} g · ${pct.toFixed(1)}% del objetivo</p><p><span class="badge ${estado.clase}">${estado.texto}</span></p>`;}else{res.className='empty';res.textContent='Sin pesajes registrados.';}
-  objTb.innerHTML=pesosObjetivoSemanal.map((p,i)=>{const ini=sumarDias(fechaDesdeInput(lote.fechaInicio),i*7),fin=sumarDias(fechaDesdeInput(lote.fechaInicio),i*7+6);return `<tr><td>Semana ${i+1}</td><td>${formatearFecha(ini)} - ${formatearFecha(fin)}</td><td>${p} g</td></tr>`;}).join('');
+  objTb.innerHTML=pesosObjetivoSemanal.map((p,i)=>{const diaMeta=(i+1)*7,fechaMeta=sumarDias(fechaDesdeInput(lote.fechaInicio),diaMeta);return `<tr><td>Semana ${i+1}</td><td>Meta al ${formatearFecha(fechaMeta)} (día ${diaMeta})</td><td>${p} g</td></tr>`;}).join('');
 }
 function actualizarCostos(){
   const lote=obtenerLoteActivo(),tb=document.getElementById('tabla-gastos');
@@ -1271,7 +1295,7 @@ const exportarRespaldoCompletoOriginal=exportarRespaldoCompleto;exportarRespaldo
 function actualizarSeguridadUI(){const sel=document.getElementById('config-bloqueo');if(sel)sel.value=String(app.config.bloqueoMin||0);document.getElementById('demo-ribbon').style.display=app.config.modoDemo?'block':'none';}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;document.getElementById('btn-instalar').style.display='inline-block';});
 async function instalarPWA(){if(!deferredInstallPrompt)return alert('La instalación aparecerá al abrir la app desde un sitio HTTPS compatible.');deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;document.getElementById('btn-instalar').style.display='none';}
-if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 const actualizarTodoV4=actualizarTodo;actualizarTodo=function(){asegurarV45();actualizarTodoV4();actualizarPapelera();actualizarSaludRespaldo();actualizarSeguridadUI();};
 
 document.addEventListener('DOMContentLoaded',()=>{

@@ -103,6 +103,7 @@
     .g10{background:linear-gradient(135deg,#ff9800,#ff5722)}
     .g11{background:linear-gradient(135deg,#00bcd4,#2196f3)}
     .g12{background:linear-gradient(135deg,#455a64,#263238)}
+    .g13{background:linear-gradient(135deg,#1e3a8a,#2563eb)}
 
     label { display:block; margin-top:10px; font-size:.88rem; color:#445; font-weight:700; }
     input,select,textarea {
@@ -282,8 +283,8 @@
           <div class="metrica g4"><h3>Días de vida</h3><p id="dias-vida">0</p><small id="fecha-nacimiento-lote">Nac: -</small></div>
           <div class="metrica g3"><h3>Consumo esperado hoy</h3><p id="consumo-diario-esperado">0 kg</p><small>Referencia por edad</small></div>
           <div class="metrica g12"><h3>Consumo real acumulado</h3><p id="consumo-real-acumulado">0 kg</p><small id="consumo-cumplimiento">Sin registros</small></div>
-          <div class="metrica g7"><h3>Peso objetivo hoy</h3><p id="peso-objetivo-hoy">0 g</p><small id="peso-real-resumen">Real: sin registro</small></div>
-          <div class="metrica g13"><h3>Meta fin de semana</h3><p id="peso-meta-semanal">0 g</p><small id="fecha-meta-semanal">Fecha meta: -</small></div>
+          <div class="metrica g7"><h3 id="titulo-peso-objetivo">Peso objetivo hoy</h3><p id="peso-objetivo-hoy">0 g</p><small id="peso-real-resumen">Real: sin registro</small></div>
+          <div class="metrica g13"><h3 id="titulo-meta-peso">Meta fin de semana</h3><p id="peso-meta-semanal">0 g</p><small id="fecha-meta-semanal">Fecha meta: -</small></div>
           <div class="metrica g8"><h3>Conversión alimenticia</h3><p id="fcr-resumen">-</p><small id="fcr-detalle">Requiere consumo y peso</small></div>
           <div class="metrica g5"><h3>Temperatura recomendada</h3><p id="temperatura-recomendada">0°C</p><small id="temperatura-real-resumen">Real: sin registro</small></div>
           <div class="metrica g6"><h3>Humedad recomendada</h3><p id="humedad-recomendada">0%</p><small id="humedad-real-resumen">Real: sin registro</small></div>
@@ -675,7 +676,7 @@
     </div>
   </section>
 
-  <div class="footer">AviGenio COBB 4.5 · Funciona localmente y sin Internet · Respalda tus datos regularmente</div>
+  <div class="footer">AviGenio COBB 4.7.1 · Funciona localmente y sin Internet · Respalda tus datos regularmente</div>
 </div>
 
 <script>
@@ -718,7 +719,7 @@ let app = cargarApp();
 asegurarDatosV3();
 
 function appVacia(){
-  return {version:4.5,lotes:[],loteActivoId:null,inventario:[],papelera:[],config:{ultimaActualizacion:new Date().toISOString()}};
+  return {version:4.7,lotes:[],loteActivoId:null,inventario:[],papelera:[],config:{ultimaActualizacion:new Date().toISOString()}};
 }
 
 function normalizarLote(lote){
@@ -762,7 +763,7 @@ function cargarApp(){
     const raw=localStorage.getItem(STORAGE_KEY);
     if(raw){
       const parsed=JSON.parse(raw);
-      return {version:4.5,lotes:(parsed.lotes||[]).map(normalizarLote),loteActivoId:parsed.loteActivoId||null,inventario:Array.isArray(parsed.inventario)?parsed.inventario:[],papelera:Array.isArray(parsed.papelera)?parsed.papelera:[],config:parsed.config||{}};
+      return {version:4.7,lotes:(parsed.lotes||[]).map(normalizarLote),loteActivoId:parsed.loteActivoId||null,inventario:Array.isArray(parsed.inventario)?parsed.inventario:[],papelera:Array.isArray(parsed.papelera)?parsed.papelera:[],config:parsed.config||{}};
     }
 
     const antigua=JSON.parse(localStorage.getItem('pollosCobbApp')||'null');
@@ -835,7 +836,8 @@ function muertosAcumulados(lote){ return lote.historialMortalidad.reduce((s,x)=>
 function vivosActuales(lote){ return Math.max(0,lote.pollosIniciales-muertosAcumulados(lote)); }
 function diaActualLote(lote){ return diasEntre(fechaDesdeInput(lote.fechaInicio),new Date()); }
 function objetivoPesoDia(dia){
-  const d=clamp(Number(dia)||0,0,42);
+  const d=Number(dia);
+  if(!Number.isFinite(d) || d<0 || d>42) return null;
   for(let i=0;i<puntosPesoOficial.length-1;i++){
     const a=puntosPesoOficial[i],b=puntosPesoOficial[i+1];
     if(d>=a.dia&&d<=b.dia){
@@ -843,12 +845,18 @@ function objetivoPesoDia(dia){
       return Math.round(a.peso+(b.peso-a.peso)*proporcion);
     }
   }
-  return puntosPesoOficial[puntosPesoOficial.length-1].peso;
+  return null;
 }
 function metaPesoSemana(dia){
-  const d=clamp(Number(dia)||0,0,42);
+  const d=Number(dia);
+  if(!Number.isFinite(d) || d<0){
+    return {estado:'antes',semana:1,diaMeta:7,peso:pesosObjetivoSemanal[0]};
+  }
+  if(d>42){
+    return {estado:'finalizada',semana:6,diaMeta:42,peso:pesosObjetivoSemanal[5]};
+  }
   const semana=clamp(Math.floor(Math.max(d-1,0)/7)+1,1,6);
-  return {semana,diaMeta:semana*7,peso:pesosObjetivoSemanal[semana-1]};
+  return {estado:'activa',semana,diaMeta:semana*7,peso:pesosObjetivoSemanal[semana-1]};
 }
 function consumoEsperadoAveDia(dia){ return consumoDiarioPorDia[clamp(dia,0,42)]||0; }
 function semanaPorDia(dia){ return clamp(Math.floor(clamp(dia,0,42)/7),0,5); }
@@ -1083,29 +1091,32 @@ function actualizarResumen(){
   sin.style.display=lote?'none':'block';cont.style.display=lote?'block':'none';if(!lote)return;
   const dia=diaActualLote(lote),diaRef=clamp(dia,0,42),sem=semanaPorDia(diaRef),muertos=muertosAcumulados(lote),vivos=vivosActuales(lote),mort=lote.pollosIniciales?muertos/lote.pollosIniciales*100:0,sup=100-mort;
   const consumoHoy=vivos*consumoEsperadoAveDia(diaRef)/1000,consReal=consumoRealAcumulado(lote),consEsp=consumoEsperadoAcumulado(lote),cumpl=consEsp?consReal/consEsp*100:null;
-  const pesoObj=objetivoPesoDia(diaRef),metaSemanal=metaPesoSemana(diaRef),uPeso=ultimoPeso(lote),uDiario=ultimoDiario(lote),fcr=calcularFCR(lote),req=requerimientosEquipos[sem],costos=costosLote(lote);
+  const pesoObj=objetivoPesoDia(dia),metaSemanal=metaPesoSemana(dia),uPeso=ultimoPeso(lote),uDiario=ultimoDiario(lote),fcr=calcularFCR(lote),req=requerimientosEquipos[sem],costos=costosLote(lote),fueraTabla=dia>42;
   document.getElementById('nombre-lote-activo').textContent=lote.nombre;
   document.getElementById('estado-lote-texto').textContent=lote.estado==='cerrado'?'Cerrado':'En seguimiento';
   const badge=document.getElementById('estado-lote-badge');badge.textContent=lote.estado==='cerrado'?'Lote cerrado':'Lote activo';badge.className='badge '+(lote.estado==='cerrado'?'gray':'green');
   document.getElementById('vivos').textContent=vivos;document.getElementById('supervivencia-resumen').textContent=`Supervivencia ${sup.toFixed(2)}%`;
   document.getElementById('muertos').textContent=muertos;document.getElementById('mortalidad-resumen').textContent=`${mort.toFixed(2)}% acumulada`;
   document.getElementById('dias-vida').textContent=Math.max(dia,0);document.getElementById('fecha-nacimiento-lote').textContent='Nac: '+formatearFecha(fechaDesdeInput(lote.fechaInicio));
-  document.getElementById('consumo-diario-esperado').textContent=numero(consumoHoy)+' kg';document.getElementById('consumo-real-acumulado').textContent=numero(consReal)+' kg';document.getElementById('consumo-cumplimiento').textContent=cumpl===null?'Sin registros':`Cumplimiento ${cumpl.toFixed(1)}%`;
-  document.getElementById('peso-objetivo-hoy').textContent=pesoObj+' g';document.getElementById('peso-real-resumen').textContent=uPeso?`Real: ${numero(uPeso.pesoPromedio,0)} g (${formatearFecha(fechaDesdeInput(uPeso.fecha))})`:'Real: sin registro';
+  document.getElementById('consumo-diario-esperado').textContent=fueraTabla?'Sin referencia':numero(consumoHoy)+' kg';document.getElementById('consumo-real-acumulado').textContent=numero(consReal)+' kg';document.getElementById('consumo-cumplimiento').textContent=fueraTabla?'Tabla Cobb finalizó día 42':(cumpl===null?'Sin registros':`Cumplimiento ${cumpl.toFixed(1)}%`);
+  document.getElementById('titulo-peso-objetivo').textContent=fueraTabla?'Peso objetivo diario':'Peso objetivo hoy';
+  document.getElementById('peso-objetivo-hoy').textContent=pesoObj===null?'Sin referencia':pesoObj+' g';document.getElementById('peso-real-resumen').textContent=uPeso?`Real: ${numero(uPeso.pesoPromedio,0)} g (${formatearFecha(fechaDesdeInput(uPeso.fecha))})`:(fueraTabla?'Estándar disponible hasta día 42':'Real: sin registro');
+  document.getElementById('titulo-meta-peso').textContent=metaSemanal.estado==='finalizada'?'Meta final Cobb':'Meta fin de semana';
   document.getElementById('peso-meta-semanal').textContent=metaSemanal.peso+' g';
-  document.getElementById('fecha-meta-semanal').textContent=`Semana ${metaSemanal.semana} · meta al ${formatearFecha(sumarDias(fechaDesdeInput(lote.fechaInicio),metaSemanal.diaMeta))}`;
+  const fechaMeta=formatearFecha(sumarDias(fechaDesdeInput(lote.fechaInicio),metaSemanal.diaMeta));
+  document.getElementById('fecha-meta-semanal').textContent=metaSemanal.estado==='finalizada'?`Día 42 · ${fechaMeta} · estándar finalizado`:`Semana ${metaSemanal.semana} · meta al ${fechaMeta}`;
   document.getElementById('fcr-resumen').textContent=fcr?fcr.toFixed(2):'-';document.getElementById('fcr-detalle').textContent=fcr?'Consumo real ÷ peso vivo':'Requiere consumo y peso';
-  document.getElementById('temperatura-recomendada').textContent=temperaturaIdealPorSemana[sem]+'°C';document.getElementById('humedad-recomendada').textContent=humedadIdealPorSemana[sem]+'%';
+  document.getElementById('temperatura-recomendada').textContent=fueraTabla?'Sin referencia':temperaturaIdealPorSemana[sem]+'°C';document.getElementById('humedad-recomendada').textContent=fueraTabla?'Sin referencia':humedadIdealPorSemana[sem]+'%';
   document.getElementById('temperatura-real-resumen').textContent=uDiario?.temperatura!=null?`Real: ${uDiario.temperatura}°C`:'Real: sin registro';document.getElementById('humedad-real-resumen').textContent=uDiario?.humedad!=null?`Real: ${uDiario.humedad}%`:'Real: sin registro';
-  document.getElementById('comedero-hoy').textContent=Math.ceil(calcularComederoCm(vivos,req))+' cm';document.getElementById('bebedero-hoy').textContent=Math.ceil(calcularBebederoCm(vivos,req))+' cm';
+  document.getElementById('comedero-hoy').textContent=fueraTabla?'Sin referencia':Math.ceil(calcularComederoCm(vivos,req))+' cm';document.getElementById('bebedero-hoy').textContent=fueraTabla?'Sin referencia':Math.ceil(calcularBebederoCm(vivos,req))+' cm';
   document.getElementById('costo-acumulado-resumen').textContent=dinero(costos.total);document.getElementById('costo-pollo-resumen').textContent=dinero(costos.porPollo);document.getElementById('costo-kg-resumen').textContent=dinero(costos.porKg);
   document.getElementById('progreso-crianza').style.width=clamp((Math.max(dia,0)/lote.edadVenta)*100,0,100)+'%';
   const alertas=[];
   if(dia<0)alertas.push('<div class="alert warning">El lote todavía no inicia.</div>');
-  if(dia>42)alertas.push(`<div class="alert info">El lote está en el día ${dia}. Las referencias de consumo, peso, temperatura y humedad están limitadas al estándar cargado hasta el día 42.</div>`);
+  if(dia>42)alertas.push(`<div class="alert info">El lote está en el día ${dia}. La tabla Cobb cargada finalizó en el día 42. Desde entonces la app conserva los datos reales, pero ya no muestra objetivos diarios ni recomendaciones como si siguieran vigentes.</div>`);
   if(mort>=5)alertas.push(`<div class="alert danger">Mortalidad acumulada alta: ${mort.toFixed(2)}%. Revisa causa, ambiente, agua, alimento y sanidad.</div>`);
   alertasV3(lote).forEach(x=>alertas.push(`<div class="alert warning">⚠️ ${escapeHtml(x)}</div>`));
-  if(uPeso){const obj=objetivoPesoDia(clamp(edadEnFecha(lote,uPeso.fecha),0,42));const pct=uPeso.pesoPromedio/obj*100;if(pct<92)alertas.push(`<div class="alert warning">El último peso está en ${pct.toFixed(1)}% del objetivo para la edad.</div>`);}
+  if(uPeso){const obj=objetivoPesoDia(edadEnFecha(lote,uPeso.fecha));if(obj){const pct=uPeso.pesoPromedio/obj*100;if(pct<92)alertas.push(`<div class="alert warning">El último peso está en ${pct.toFixed(1)}% del objetivo para la edad.</div>`);}}
   document.getElementById('alertas-resumen').innerHTML=alertas.join('');
 }
 

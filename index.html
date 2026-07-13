@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4361ee">
-  <title>🐔 AviGenio COBB 500 Pro 5.0</title>
+  <meta name="app-version" content="5.1">
+  <title>🐔 AviGenio COBB 500 Pro 5.1</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.svg">
   <style>
@@ -277,9 +278,56 @@
   .quick-answer h4{color:#1e3a8a;margin-bottom:8px}
   @media(min-width:700px){.article-modal{align-items:center;padding:20px}.article-sheet{border-radius:24px;max-height:85vh}}
 
+
+  /* ===== SISTEMA DE ACTUALIZACIÓN V5.1 ===== */
+  .update-banner{
+    position:fixed;
+    left:12px;
+    right:12px;
+    bottom:12px;
+    z-index:10050;
+    display:none;
+    max-width:720px;
+    margin:auto;
+    background:linear-gradient(135deg,#172b4d,#4361ee);
+    color:#fff;
+    border-radius:18px;
+    padding:15px;
+    box-shadow:0 18px 50px rgba(15,23,42,.35);
+  }
+  .update-banner.show{display:block}
+  .update-banner strong{display:block;font-size:1rem;margin-bottom:4px}
+  .update-banner p{margin:0 0 10px;color:#eef4ff;font-size:.88rem;line-height:1.4}
+  .update-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .update-actions button{width:auto;flex:1;margin:0;padding:10px 12px}
+  .update-actions .update-now{background:#2e7d32}
+  .update-actions .update-later{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35)}
+  .version-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#eef2ff;
+    color:#3346a0;
+    font-size:.75rem;
+    font-weight:800;
+    margin-left:6px;
+  }
+
 </style>
 </head>
 <body>
+
+<div id="aviso-actualizacion" class="update-banner" role="status" aria-live="polite">
+  <strong>🚀 Hay una nueva versión de AviGenio</strong>
+  <p id="texto-actualizacion">Actualiza para recibir las mejoras sin perder tus lotes ni registros.</p>
+  <div class="update-actions">
+    <button class="update-now" onclick="aplicarActualizacion()">Actualizar ahora</button>
+    <button class="update-later" onclick="ocultarAvisoActualizacion()">Más tarde</button>
+  </div>
+</div>
+
 <div id="demo-ribbon" class="demo-ribbon">MODO DEMO</div>
 <div id="pantalla-bloqueo" class="overlay" style="display:none">
   <div class="overlay-card"><div class="logo">🐔</div><h2>AviGenio COBB</h2><p>Ingresa tu PIN para abrir la aplicación.</p><input id="pin-acceso" type="password" inputmode="numeric" maxlength="8" placeholder="PIN"><button class="btn-primary" onclick="desbloquearApp()">🔓 Ingresar</button><button class="btn-secondary" onclick="abrirModoDemoDesdeBloqueo()">👀 Ver demostración</button><p class="nota">El PIN protege el acceso en este dispositivo. No cifra los datos.</p></div>
@@ -295,9 +343,9 @@
   </div>
 </div>
 <div class="container">
-  <div class="brand-bar"><span class="brand-chip">🐔 AviGenio COBB</span><div class="top-actions"><button id="btn-instalar" class="btn-primary" style="display:none" onclick="instalarPWA()">📲 Instalar</button><button class="btn-secondary" onclick="bloquearAhora()">🔒 Bloquear</button><button class="btn-warning" onclick="alternarDemo()">🎭 Demo</button></div></div>
+  <div class="brand-bar"><span class="brand-chip">🐔 AviGenio COBB <span class="version-chip">v5.1</span></span><div class="top-actions"><button id="btn-instalar" class="btn-primary" style="display:none" onclick="instalarPWA()">📲 Instalar</button><button class="btn-secondary" onclick="bloquearAhora()">🔒 Bloquear</button><button class="btn-warning" onclick="alternarDemo()">🎭 Demo</button></div></div>
   <h1>MANEJO DE POLLOS COBB 500 PRO</h1>
-  <p class="subtitle">Control productivo, sanitario y económico · Versión comercial 5.0</p>
+  <p class="subtitle">Control productivo, sanitario y económico · Versión comercial 5.1</p>
 
   <div class="tabs">
     <div class="tab active" onclick="mostrarTab('resumen')">Resumen</div>
@@ -796,12 +844,13 @@
     </div>
   </section>
 
-  <div class="footer">AviGenio COBB 5.0 · Funciona localmente y sin Internet · Respalda tus datos regularmente</div>
+  <div class="footer">AviGenio COBB 5.1 · Funciona localmente y sin Internet · Respalda tus datos regularmente</div>
 </div>
 
 <script>
 'use strict';
 
+const APP_VERSION='5.1';
 const STORAGE_KEY = 'pollosCobbAppV3';
 const LEGACY_KEYS = ['pollosCobbAppV2','pollosCobbApp','pollosApp'];
 
@@ -858,7 +907,7 @@ let app = cargarApp();
 asegurarDatosV3();
 
 function appVacia(){
-  return {version:5.0,lotes:[],loteActivoId:null,inventario:[],papelera:[],config:{ultimaActualizacion:new Date().toISOString()}};
+  return {version:5.1,lotes:[],loteActivoId:null,inventario:[],papelera:[],config:{ultimaActualizacion:new Date().toISOString()}};
 }
 
 function normalizarLote(lote){
@@ -902,7 +951,7 @@ function cargarApp(){
     const raw=localStorage.getItem(STORAGE_KEY);
     if(raw){
       const parsed=JSON.parse(raw);
-      return {version:5.0,lotes:(parsed.lotes||[]).map(normalizarLote),loteActivoId:parsed.loteActivoId||null,inventario:Array.isArray(parsed.inventario)?parsed.inventario:[],papelera:Array.isArray(parsed.papelera)?parsed.papelera:[],config:parsed.config||{}};
+      return {version:5.1,lotes:(parsed.lotes||[]).map(normalizarLote),loteActivoId:parsed.loteActivoId||null,inventario:Array.isArray(parsed.inventario)?parsed.inventario:[],papelera:Array.isArray(parsed.papelera)?parsed.papelera:[],config:parsed.config||{}};
     }
 
     const antigua=JSON.parse(localStorage.getItem('pollosCobbApp')||'null');
@@ -1373,7 +1422,7 @@ function actualizarEquipos(){
 
 
 function asegurarDatosV3(){
-  app.version=5.0;
+  app.version=5.1;
   app.config=Object.assign({granja:'',responsable:'',moneda:'S/',genetica:'COBB 500',alertaPeso:5,alertaConsumo:10,alertaMortalidad:5,diasSinRegistro:2},app.config||{});
   app.lotes.forEach(l=>{
     if(!Array.isArray(l.sanidad))l.sanidad=[];
@@ -1594,7 +1643,7 @@ function exportarRespaldoCompleto(){
 }
 function importarRespaldo(){
   const input=document.getElementById('archivo-respaldo'),file=input.files?.[0];if(!file)return alert('Seleccione un archivo JSON.');
-  const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!Array.isArray(data.lotes))throw new Error('Formato inválido');if(!confirm('Esto reemplazará los datos actuales. ¿Continuar?'))return;app={version:5.0,lotes:data.lotes.map(normalizarLote),loteActivoId:data.loteActivoId||data.lotes[0]?.id||null,inventario:Array.isArray(data.inventario)?data.inventario:[],papelera:Array.isArray(data.papelera)?data.papelera:[],config:data.config||{}};guardarApp();actualizarTodo();input.value='';alert('Respaldo restaurado correctamente.');}catch(e){alert('No se pudo restaurar el archivo. Verifique que sea un respaldo válido.');}};reader.readAsText(file);
+  const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!Array.isArray(data.lotes))throw new Error('Formato inválido');if(!confirm('Esto reemplazará los datos actuales. ¿Continuar?'))return;app={version:5.1,lotes:data.lotes.map(normalizarLote),loteActivoId:data.loteActivoId||data.lotes[0]?.id||null,inventario:Array.isArray(data.inventario)?data.inventario:[],papelera:Array.isArray(data.papelera)?data.papelera:[],config:data.config||{}};guardarApp();actualizarTodo();input.value='';alert('Respaldo restaurado correctamente.');}catch(e){alert('No se pudo restaurar el archivo. Verifique que sea un respaldo válido.');}};reader.readAsText(file);
 }
 function csvEscape(v){const s=String(v??'');return '"'+s.replace(/"/g,'""')+'"';}
 function exportarLoteActivoCSV(){
@@ -1624,9 +1673,9 @@ function actualizarTodo(){
 }
 
 
-// ===== EXTENSIONES COMERCIALES V4.5 =====
+// ===== EXTENSIONES COMERCIALES V5.1 =====
 let deferredInstallPrompt=null, onboardingPaso=0, temporizadorBloqueo=null;
-function asegurarV45(){app.version=5.0;if(!Array.isArray(app.papelera))app.papelera=[];app.config=Object.assign({pinHash:'',bloqueoMin:0,onboardingVisto:false,modoDemo:false,ultimoRespaldo:null,equipos:{comederoId:'tolva-10',bebederoId:'campana-8',comederoExistentes:0,bebederoExistentes:0},catalogoEquipos:null},app.config||{});}
+function asegurarV45(){app.version=5.1;if(!Array.isArray(app.papelera))app.papelera=[];app.config=Object.assign({pinHash:'',bloqueoMin:0,onboardingVisto:false,modoDemo:false,ultimoRespaldo:null,equipos:{comederoId:'tolva-10',bebederoId:'campana-8',comederoExistentes:0,bebederoExistentes:0},catalogoEquipos:null},app.config||{});}
 function hashSimple(s){let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(16);}
 function guardarSeguridad(){const pin=document.getElementById('config-pin').value.trim(),mins=Number(document.getElementById('config-bloqueo').value)||0;if(pin&&!/^\d{4,8}$/.test(pin))return alert('El PIN debe tener entre 4 y 8 dígitos.');if(pin)app.config.pinHash=hashSimple(pin);app.config.bloqueoMin=mins;document.getElementById('config-pin').value='';guardarApp();programarBloqueo();alert('Seguridad guardada.');}
 function quitarPin(){if(!app.config.pinHash)return alert('No hay PIN configurado.');if(!confirm('¿Quitar el PIN de acceso?'))return;app.config.pinHash='';app.config.bloqueoMin=0;guardarApp();document.getElementById('pantalla-bloqueo').style.display='none';alert('PIN eliminado.');}
@@ -1654,19 +1703,175 @@ function actualizarPapelera(){const box=document.getElementById('papelera-lista'
 function actualizarSaludRespaldo(){const box=document.getElementById('salud-respaldo');if(!box)return;const dias=app.config.ultimoRespaldo?Math.floor((Date.now()-new Date(app.config.ultimoRespaldo))/86400000):null;box.innerHTML=`<div class="health-box"><strong>${app.lotes.length}</strong>Lotes guardados</div><div class="health-box"><strong>${app.papelera.length}</strong>En papelera</div><div class="health-box"><strong>${dias===null?'Nunca':dias+' d'}</strong>Desde respaldo</div>`;}
 const exportarRespaldoCompletoOriginal=exportarRespaldoCompleto;exportarRespaldoCompleto=function(){app.config.ultimoRespaldo=new Date().toISOString();guardarApp();exportarRespaldoCompletoOriginal();actualizarSaludRespaldo();};
 function actualizarSeguridadUI(){const sel=document.getElementById('config-bloqueo');if(sel)sel.value=String(app.config.bloqueoMin||0);document.getElementById('demo-ribbon').style.display=app.config.modoDemo?'block':'none';}
+
+// ===== ACTUALIZACIÓN AUTOMÁTICA Y CONTROL DE CACHÉ V5.1 =====
+const VERSION_LOCAL_KEY='avigenio_version_instalada';
+const VERSION_IGNORADA_KEY='avigenio_version_ignorada';
+let versionRemotaDisponible=null;
+
+function compararVersiones(a,b){
+  const A=String(a||'0').split('.').map(Number);
+  const B=String(b||'0').split('.').map(Number);
+  const largo=Math.max(A.length,B.length);
+  for(let i=0;i<largo;i++){
+    const x=A[i]||0,y=B[i]||0;
+    if(x>y)return 1;
+    if(x<y)return -1;
+  }
+  return 0;
+}
+
+function mostrarAvisoActualizacion(version){
+  const aviso=document.getElementById('aviso-actualizacion');
+  const texto=document.getElementById('texto-actualizacion');
+  if(!aviso)return;
+  versionRemotaDisponible=version||null;
+  if(texto){
+    texto.textContent=version
+      ? `La versión ${version} está lista. Tus lotes y registros permanecerán guardados.`
+      : 'Hay una actualización lista. Tus lotes y registros permanecerán guardados.';
+  }
+  aviso.classList.add('show');
+}
+
+function ocultarAvisoActualizacion(){
+  document.getElementById('aviso-actualizacion')?.classList.remove('show');
+  if(versionRemotaDisponible){
+    localStorage.setItem(VERSION_IGNORADA_KEY,versionRemotaDisponible);
+  }
+}
+
+async function limpiarCachesAviGenio(){
+  try{
+    if('caches' in window){
+      const nombres=await caches.keys();
+      await Promise.all(nombres.map(nombre=>caches.delete(nombre)));
+    }
+  }catch(error){
+    console.warn('No se pudieron limpiar todas las cachés:',error);
+  }
+
+  try{
+    if('serviceWorker' in navigator){
+      const registros=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registros.map(registro=>registro.unregister()));
+    }
+  }catch(error){
+    console.warn('No se pudo reiniciar el Service Worker:',error);
+  }
+}
+
+async function aplicarActualizacion(){
+  const boton=document.querySelector('#aviso-actualizacion .update-now');
+  if(boton){
+    boton.disabled=true;
+    boton.textContent='Actualizando...';
+  }
+
+  localStorage.setItem(VERSION_LOCAL_KEY,versionRemotaDisponible||APP_VERSION);
+  localStorage.removeItem(VERSION_IGNORADA_KEY);
+  await limpiarCachesAviGenio();
+
+  const url=new URL(location.href);
+  url.searchParams.set('v',versionRemotaDisponible||APP_VERSION);
+  url.searchParams.set('recarga',Date.now().toString());
+  location.replace(url.toString());
+}
+
+async function verificarNuevaVersion(){
+  if(location.protocol==='file:')return;
+
+  try{
+    if('serviceWorker' in navigator){
+      const registro=await navigator.serviceWorker.getRegistration();
+      if(registro)await registro.update();
+    }
+
+    const url=new URL(location.href);
+    url.search='';
+    url.hash='';
+    url.searchParams.set('version_check',Date.now().toString());
+
+    const respuesta=await fetch(url.toString(),{
+      cache:'no-store',
+      headers:{
+        'Cache-Control':'no-cache, no-store, must-revalidate',
+        'Pragma':'no-cache'
+      }
+    });
+    if(!respuesta.ok)return;
+
+    const texto=await respuesta.text();
+    const meta=texto.match(/<meta\s+name=["']app-version["']\s+content=["']([^"']+)["']/i);
+    const constante=texto.match(/const\s+APP_VERSION\s*=\s*["']([^"']+)["']/);
+    const versionRemota=(meta?.[1]||constante?.[1]||'').trim();
+    if(!versionRemota)return;
+
+    const ignorada=localStorage.getItem(VERSION_IGNORADA_KEY);
+    if(compararVersiones(versionRemota,APP_VERSION)>0 && ignorada!==versionRemota){
+      mostrarAvisoActualizacion(versionRemota);
+    }
+  }catch(error){
+    console.warn('No se pudo comprobar la versión:',error);
+  }
+}
+
+async function prepararVersionActual(){
+  const instalada=localStorage.getItem(VERSION_LOCAL_KEY);
+
+  if(instalada!==APP_VERSION){
+    localStorage.setItem(VERSION_LOCAL_KEY,APP_VERSION);
+    localStorage.removeItem(VERSION_IGNORADA_KEY);
+
+    // Al entrar por primera vez a una versión nueva, elimina la caché anterior.
+    await limpiarCachesAviGenio();
+
+    // Evita un bucle: solo recarga si todavía no existe ?v=VERSION.
+    const url=new URL(location.href);
+    if(url.searchParams.get('v')!==APP_VERSION){
+      url.searchParams.set('v',APP_VERSION);
+      url.searchParams.set('recarga',Date.now().toString());
+      location.replace(url.toString());
+      return false;
+    }
+  }
+  return true;
+}
+
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;document.getElementById('btn-instalar').style.display='inline-block';});
 async function instalarPWA(){if(!deferredInstallPrompt)return alert('La instalación aparecerá al abrir la app desde un sitio HTTPS compatible.');deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;document.getElementById('btn-instalar').style.display='none';}
-if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load',async()=>{
+    try{
+      const registro=await navigator.serviceWorker.register(`./sw.js?v=${encodeURIComponent(APP_VERSION)}`,{updateViaCache:'none'});
+      await registro.update();
+    }catch(error){
+      console.warn('Service Worker no disponible:',error);
+    }
+  });
+}
 const actualizarTodoV4=actualizarTodo;actualizarTodo=function(){asegurarV45();actualizarTodoV4();actualizarPapelera();actualizarSaludRespaldo();actualizarSeguridadUI();};
 
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded',async()=>{
+  const continuar=await prepararVersionActual();
+  if(!continuar)return;
+
   asegurarV45();
   if(!app.config.onboardingVisto)document.getElementById('onboarding').style.display='flex';
   if(app.config.pinHash)document.getElementById('pantalla-bloqueo').style.display='flex';
   programarBloqueo();
+
   const hoy=fechaISOHoy();
-  ['fecha-inicio','diario-fecha','mortalidad-fecha','peso-fecha','gasto-fecha','sanidad-fecha','cierre-fecha','checklist-fecha'].forEach(id=>document.getElementById(id).value=hoy);
+  ['fecha-inicio','diario-fecha','mortalidad-fecha','peso-fecha','gasto-fecha','sanidad-fecha','cierre-fecha','checklist-fecha'].forEach(id=>{
+    const campo=document.getElementById(id);
+    if(campo)campo.value=hoy;
+  });
+
   actualizarTodo();
+
+  // Comprueba una versión nueva al abrir y después cada 30 minutos.
+  setTimeout(verificarNuevaVersion,5000);
+  setInterval(verificarNuevaVersion,30*60*1000);
 });
 </script>
 </body>
